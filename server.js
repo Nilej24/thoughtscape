@@ -7,6 +7,7 @@ const { errorHandler } = require('./middleware/errorMiddleware');
 const connectDB = require('./db');
 
 // import routes
+const userRouter = require('./routers/userRouter');
 
 const port = process.env.PORT || 5000;
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // routes
+app.use('/api/users', userRouter);
 
 // error handler
 app.use(errorHandler);
