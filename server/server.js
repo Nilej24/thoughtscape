@@ -8,6 +8,8 @@ const connectDB = require('./db');
 
 // import routes
 const userRouter = require('./routers/userRouter');
+const deckRouter = require('./routers/deckRouter');
+const cardRouter = require('./routers/cardRouter');
 
 const port = process.env.PORT || 5000;
 
@@ -23,6 +25,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // routes
 app.use('/api/users', userRouter);
+app.use('/api/decks', deckRouter);
+app.use('/api/cards', cardRouter);
 
 // error handler
 app.use(errorHandler);
