@@ -10,7 +10,6 @@ const {
 const router = express.Router();
 
 router.route('/')
-  .get(getCard)
   .post(createCard);
 
 router.route(':id')

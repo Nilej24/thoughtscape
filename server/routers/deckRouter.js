@@ -15,7 +15,7 @@ router.route('/')
   .post(createDeck);
 
 router.route('/:id')
-  .get(getDeck)
+  .get(getDeckCards)
   .put(updateDeck)
   .delete(deleteDeck);
 

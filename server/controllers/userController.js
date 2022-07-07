@@ -20,6 +20,12 @@ const registerUser = asyncHandler(async (req, res) => {
   // get details from req body
   const { name, email, password } = req.body;
 
+  // check all fields are filled
+  if (!name || !email || !password) {
+    res.status(400);
+    throw new Error('please fill all fields');
+  }
+
   // check if email is already used
   const userExists = await userModel.findOne({ email });
   if (!!userExists) {
