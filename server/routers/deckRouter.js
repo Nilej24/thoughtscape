@@ -1,9 +1,10 @@
 const express = require('express');
 
+const { protect } = require('../middleware/authMiddleware');
 const {
   getDecks,
   createDeck,
-  getDeck,
+  getDeckCards,
   updateDeck,
   deleteDeck,
 } = require('../controllers/deckController');
@@ -11,12 +12,12 @@ const {
 const router = express.Router();
 
 router.route('/')
-  .get(getDecks)
-  .post(createDeck);
+  .get(protect, getDecks)
+  .post(protect, createDeck);
 
 router.route('/:id')
-  .get(getDeckCards)
-  .put(updateDeck)
-  .delete(deleteDeck);
+  .get(protect, getDeckCards)
+  .put(protect, updateDeck)
+  .delete(protect, deleteDeck);
 
 module.exports = router;
