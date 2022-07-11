@@ -4,8 +4,8 @@ const { protect } = require('../middleware/authMiddleware');
 const {
   getDecks,
   createDeck,
-  getDeckCards,
-  updateDeck,
+  renameDeck,
+  setUserPermission,
   deleteDeck,
 } = require('../controllers/deckController');
 
@@ -16,8 +16,10 @@ router.route('/')
   .post(protect, createDeck);
 
 router.route('/:id')
-  .get(protect, getDeckCards)
-  .put(protect, updateDeck)
+  .put(protect, renameDeck)
   .delete(protect, deleteDeck);
+
+router.route('/:id/permissions')
+  .post(protect, setUserPermission);
 
 module.exports = router;

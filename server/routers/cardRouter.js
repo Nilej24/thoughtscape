@@ -2,7 +2,8 @@ const express = require('express');
 
 const { protect } = require('../middleware/authMiddleware');
 const {
-  createCard,
+  getCardsFromDeck,
+  createCardInDeck,
   updateCard,
   deleteCard,
 } = require('../controllers/cardController');
@@ -10,7 +11,8 @@ const {
 const router = express.Router();
 
 router.route('/')
-  .post(protect, createCard);
+  .get(protect, getCardsFromDeck)
+  .post(protect, createCardInDeck);
 
 router.route(':id')
   .put(protect, updateCard)
