@@ -42,6 +42,60 @@ const createDeck = asyncHandler(async (req, res) => {
   res.json(deck);
 });
 
+// get array of cards in a deck
+// GET /api/decks/:id
+// deck page
+const getDeckCards = asyncHandler(async (req, res) => {
+  const deck = await Deck.findById(req.params.id);
+
+  // check deck exists
+  if (!deck) {
+    res.status(400);
+    throw new Error('deck not found');
+  }
+
+  // check user can study deck
+  if (!deck.canBeStudiedBy(req.user._id)) {
+    res.status(401);
+    throw new Error('user not authorized to study deck');
+  }
+
+  // return array of cards
+  const cards = await Card.find({ deck: req.params.id });
+  res.json(cards);
+});
+
+// create card in current deck
+// POST /api/decks/:id
+// deck page
+const createCard = asyncHandler(async (req, res) => {
+  const { front, back } = req.body;
+
+  const deck = await Deck.findById(req.params.id);
+  
+  // checks deck exists
+  if (!deck) {
+    res.status(400);
+    throw new Error('deck not found');
+  }
+
+  // checks user permissions
+  if (!deck.canBeEditedBy(req.user._id)) {
+    res.status(401);
+    throw new Error('user not authorized to add cards to deck');
+  }
+
+  const card = new Card({
+    front,
+    back,
+    deck: req.params.id,
+  });
+
+  await card.save();
+
+  res.json(card)
+});
+
 // update a deck's name
 // PUT /api/decks/:id
 // deck page
@@ -50,11 +104,13 @@ const renameDeck = asyncHandler(async (req, res) => {
 
   const deck = await Deck.findById(req.params.id);
 
+  if (!deck) {
+    res.status(400);
+    throw new Error('deck not found');
+  }
+
   // checks user is authorized
-  if (
-    (req.user._id.toString() !== deck.owner.toString()) &&
-    (!deck.editors.includes(req.user._id))
-  ) {
+  if (!deck.canBeEditedBy(req.user._id)) {
     res.status(401);
     throw new Error('user not authorized to rename deck');
   }
@@ -148,6 +204,8 @@ const deleteDeck = asyncHandler(async (req, res) => {
 module.exports = {
   getDecks,
   createDeck,
+  getDeckCards,
+  createCard,
   renameDeck,
   setUserPermission,
   deleteDeck,

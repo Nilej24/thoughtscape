@@ -4,6 +4,8 @@ const { protect } = require('../middleware/authMiddleware');
 const {
   getDecks,
   createDeck,
+  getDeckCards,
+  createCard,
   renameDeck,
   setUserPermission,
   deleteDeck,
@@ -16,6 +18,8 @@ router.route('/')
   .post(protect, createDeck);
 
 router.route('/:id')
+  .get(protect, getDeckCards)
+  .post(protect, createCard)
   .put(protect, renameDeck)
   .delete(protect, deleteDeck);
 
