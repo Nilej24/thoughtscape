@@ -2,7 +2,7 @@ import { FaEdit } from 'react-icons/fa';
 
 function Card({ question, answer }) {
   return (
-    <li class="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
+    <li className="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
       <div className="w-1/2 text-start pr-2">
         {question}
       </div>
@@ -71,6 +71,12 @@ function DeckEditPage() {
           <h2 className="text-xl font-medium text-center">
             edit card
           </h2>
+          <div className="w-3/4 h-64 mx-auto bg-gray-100 rounded drop-shadow-md mt-6 flex flex-col py-2 px-3">
+            <div className="text-lg font-extralight self-start">
+              question
+            </div>
+            <textarea rows="30" className="bg-gray-50 focus:outline-none"></textarea>
+          </div>
         </section>
       </div>
     </>
