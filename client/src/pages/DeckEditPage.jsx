@@ -1,7 +1,20 @@
 import { FaEdit } from 'react-icons/fa';
 
+function Card({ question, answer }) {
+  return (
+    <li class="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
+      <div className="w-1/2 text-start pr-2">
+        {question}
+      </div>
+      <div className="w-1/2 text-end pl-2">
+        {answer}
+      </div>
+    </li>
+  );
+}
+
 function DeckEditPage() {
-  const deckName = 'Physics is shit';
+  const deckName = 'really long deck name like really this is a long deck name';
 
   return (
     <>
@@ -26,6 +39,33 @@ function DeckEditPage() {
               answer
             </h3>
           </div>
+          <ul className="py-2 px-5">
+            <Card
+              question="isnt that so cool"
+              answer="Ipsum odio quia aspernatur esse quia magnam corporis, molestias Repellendus"
+            />
+            <Card
+              question="another question?"
+              answer="another answer."
+            />
+            <Card
+              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
+              answer="shush"
+            />
+            <Card
+              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
+              answer="Consectetur accusamus vitae dignissimos sapiente suscipit at Cum dicta rem in laboriosam eveniet Rerum vel fugit debitis natus saepe? Repudiandae"
+            />
+            <Card
+              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
+              answer="Consectetur accusamus vitae dignissimos sapiente suscipit at Cum dicta rem in laboriosam eveniet Rerum vel fugit debitis natus saepe? Repudiandae"
+            />
+            <Card
+              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
+              answer="Consectetur accusamus vitae dignissimos sapiente suscipit at Cum dicta rem in laboriosam eveniet Rerum vel fugit debitis natus saepe? Repudiandae"
+            />
+            <div className="border-b border-gray-300" />
+          </ul>
         </section>
         <section className="text-center w-full md:w-1/2">
           <h2 className="text-xl font-medium text-center">
