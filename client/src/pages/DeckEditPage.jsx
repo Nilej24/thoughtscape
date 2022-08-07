@@ -82,17 +82,17 @@ function DeckEditPage() {
             <div className="text-lg font-extralight self-start">
               question
             </div>
-            <textarea rows="9" className="bg-gray-50 focus:outline-none" value="hi" />
+            <textarea rows="9" className="bg-gray-50 focus:outline-none" value="how do I edit a card" />
           </div>
           <div className="w-3/4 h-64 mx-auto bg-gray-100 rounded drop-shadow-md mt-6 flex flex-col py-2 px-3">
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea rows="9" className="bg-gray-50 focus:outline-none" value="yo" />
+            <textarea rows="9" className="bg-gray-50 focus:outline-none" value="select one first, you idiot (scroll down on mobile)" />
           </div>
           <div className="grid grid-rows-2 grid-cols-2 gap-3 pt-8 pb-12 lg:flex lg:justify-center">
             <div>
-              <button className="ml-auto flex items-center space-x-1 p-3 rounded bg-sky-500 font-medium hover:bg-sky-300 active:bg-sky-300">
+              <button className="ml-auto flex items-center space-x-1 p-3 rounded drop-shadow bg-sky-500 font-medium hover:bg-sky-300 active:bg-sky-300">
                 <span className="text-xl">
                   <IoIosSave />
                 </span>
@@ -100,7 +100,7 @@ function DeckEditPage() {
               </button>
             </div>
             <div>
-              <button className="flex items-center space-x-1 p-3 rounded bg-green-500 font-medium hover:bg-green-300 active:bg-green-300">
+              <button className="flex items-center space-x-1 p-3 rounded drop-shadow bg-green-500 font-medium hover:bg-green-300 active:bg-green-300">
                 <span className="text-xl">
                   <FaPlusSquare />
                 </span>
@@ -108,7 +108,7 @@ function DeckEditPage() {
               </button>
             </div>
             <div>
-              <button className="ml-auto flex items-center space-x-1 p-3 rounded bg-amber-500 font-medium hover:bg-amber-200 active:bg-amber-200">
+              <button className="ml-auto flex items-center space-x-1 p-3 rounded drop-shadow bg-amber-500 font-medium hover:bg-amber-200 active:bg-amber-200">
                 <span className="text-xl">
                   <FaShareSquare />
                 </span>
@@ -116,7 +116,7 @@ function DeckEditPage() {
               </button>
             </div>
             <div>
-              <button className="flex items-center space-x-1 p-3 rounded bg-red-500 font-medium hover:bg-red-300 active:bg-red-300">
+              <button className="flex items-center space-x-1 p-3 rounded drop-shadow bg-red-500 font-medium hover:bg-red-300 active:bg-red-300">
                 <span className="text-xl">
                   <FaTrash />
                 </span>
