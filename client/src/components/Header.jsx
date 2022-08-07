@@ -3,7 +3,7 @@ import { FaSignOutAlt, FaSignInAlt, FaUser } from 'react-icons/fa';
 
 function HeaderButton({ iconElement, text }) {
   return (
-    <button className="flex items-center space-x-2 font-extrabold border-2 border-black px-6 py-3 rounded bg-red-500 hover:bg-red-600">
+    <button className="flex items-center space-x-2 font-extrabold drop-shadow-md px-6 py-3 rounded bg-slate-400 hover:bg-slate-300">
       {iconElement}
       <span>{text}</span>
     </button>

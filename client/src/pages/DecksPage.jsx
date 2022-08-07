@@ -1,5 +1,5 @@
-import { MdMenuBook, MdDelete } from 'react-icons/md';
-import { FaEdit, FaUserEdit } from 'react-icons/fa';
+import { MdMenuBook } from 'react-icons/md';
+import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
 function DeckButton({ iconElement, hoverText }) {
   return (
@@ -18,7 +18,7 @@ function Deck({ name }) {
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
           <DeckButton iconElement={<FaEdit />} />
           <DeckButton iconElement={<FaUserEdit />} />
-          <DeckButton iconElement={<MdDelete />} />
+          <DeckButton iconElement={<FaTrash />} />
         </div>
       </label>
     </li>
@@ -31,7 +31,7 @@ function DecksPage() {
       <h1 className="text-3xl font-semibold text-center py-3">
         Your Decks
       </h1>
-      <button className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-red-500 self-center md:self-start hover:bg-red-600">
+      <button className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-slate-400 self-center md:self-start hover:bg-slate-300">
         <span className="text-3xl">
           <MdMenuBook />
         </span>
@@ -49,7 +49,7 @@ function DecksPage() {
         <Deck name="Physics is shit" />
         <Deck name="the longest flashcard deck name in recorded history btw, if you really have to know (i'm doing this to test multiple lines)" />
       </ul>
-      <button className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-red-500 text-white self-center md:self-start md:ml-16 hover:bg-red-600">
+      <button className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-slate-400 self-center md:self-start md:ml-16 hover:bg-slate-300">
         +
       </button>
     </section>
