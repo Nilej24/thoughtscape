@@ -1,9 +1,9 @@
 import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
-function DeckButton({ iconElement, hoverText }) {
+function DeckButton({ iconElement, hoverText, bgColor }) {
   return (
-    <button class="rounded bg-cyan-600 p-3 text-lg hover:bg-cyan-700">
+    <button className={`rounded p-3 text-lg drop-shadow bg-${bgColor}-500 hover:bg-${bgColor}-300 `}>
       {iconElement}
     </button>
   );
@@ -16,9 +16,9 @@ function Deck({ name }) {
         <input type="checkbox" className="w-6 h-6 shrink-0" />
         <span>{name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
-          <DeckButton iconElement={<FaEdit />} />
-          <DeckButton iconElement={<FaUserEdit />} />
-          <DeckButton iconElement={<FaTrash />} />
+          <DeckButton iconElement={<FaEdit />} bgColor="sky" />
+          <DeckButton iconElement={<FaUserEdit />} bgColor="purple" />
+          <DeckButton iconElement={<FaTrash />} bgColor="red" />
         </div>
       </label>
     </li>
