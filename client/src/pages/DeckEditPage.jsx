@@ -5,12 +5,12 @@ import { IoIosSave } from 'react-icons/io';
 function ListCard({ question, answer }) {
   return (
     <li className="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
-      <div className="w-1/2 text-start pr-2">
+      <p className="w-1/2 text-start pr-2">
         {question}
-      </div>
-      <div className="w-1/2 text-end pl-2">
+      </p>
+      <p className="w-1/2 text-end pl-2">
         {answer}
-      </div>
+      </p>
     </li>
   );
 }

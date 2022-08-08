@@ -1,24 +1,23 @@
 import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
-function DeckButton({ iconElement, hoverText, bgColor }) {
-  return (
-    <button className={`rounded p-3 text-lg drop-shadow bg-${bgColor}-500 hover:bg-${bgColor}-300 `}>
-      {iconElement}
-    </button>
-  );
-}
-
 function Deck({ name }) {
   return (
     <li>
+      <div className="border"></div>
       <label className="flex items-center space-x-5 p-8 cursor-pointer hover:bg-gray-100 relative group">
         <input type="checkbox" className="w-6 h-6 shrink-0" />
         <span>{name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
-          <DeckButton iconElement={<FaEdit />} bgColor="sky" />
-          <DeckButton iconElement={<FaUserEdit />} bgColor="purple" />
-          <DeckButton iconElement={<FaTrash />} bgColor="red" />
+          <button className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
+            <FaEdit />
+          </button>
+          <button className="rounded p-3 text-lg drop-shadow bg-purple-500 hover:bg-purple-300">
+            <FaUserEdit />
+          </button>
+          <button className="rounded p-3 text-lg drop-shadow bg-red-500 hover:bg-red-300">
+            <FaTrash />
+          </button>
         </div>
       </label>
     </li>
@@ -47,7 +46,6 @@ function DecksPage() {
         <Deck name="chem" />
         <Deck name="maths flashcards for some reason?" />
         <Deck name="Physics is shit" />
-        <Deck name="the longest flashcard deck name in recorded history btw, if you really have to know (i'm doing this to test multiple lines)" />
       </ul>
       <button className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-slate-400 self-center md:self-start md:ml-16 hover:bg-slate-300">
         +
