@@ -2,7 +2,7 @@ import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
 function EndScreen({ score }) {
   return (
-    <div className="container mx-auto pt-20 md:pt-44">
+    <div className="container mx-auto py-20 md:py-44">
       <div className="flex flex-col items-center gap-10 xl:scale-125">
         <div className="flex flex-col md:flex-row items-center gap-5 md:gap-0">
           <p className="md:self-start">
@@ -46,7 +46,7 @@ function EndScreen({ score }) {
 
 function StudyPage() {
   let currentCardIsAnswered = true;
-  let cardsAnswered = 10;
+  let cardsAnswered = 4;
   let score = 7;
 
   const confidenceColor = '#ef4444';
@@ -104,7 +104,7 @@ function StudyPage() {
 
   // render page
   return (
-    <section className="container mx-auto px-6 py-10 md:py-40 overflow-hidden">
+    <section className="container mx-auto px-6 py-10 md:py-40">
       <div className="xl:scale-125 flex flex-col md:flex-row justify-center items-center gap-10">
         <div className="flex flex-row md:flex-col-reverse gap-3">
           {cards.map(mapCardsToProgressBar)}
