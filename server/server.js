@@ -1,6 +1,7 @@
 // import npm stuff
 const express = require('express');
 require('dotenv').config();
+const cors = require('cors');
 
 // import custom stuff
 const { errorHandler } = require('./middleware/errorMiddleware');
@@ -18,6 +19,9 @@ connectDB();
 
 // create app
 const app = express();
+
+// fix cors for retarded error thing
+app.use(cors());
 
 // middleware
 app.use(express.json());
