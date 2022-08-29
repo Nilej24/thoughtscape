@@ -22,7 +22,7 @@ function SignIn() {
   };
 
   return (
-    <section className="flex flex-col items-center py-10 px-5">
+    <section className={`flex flex-col items-center py-10 px-5 ${isLoading ? 'opacity-50' : ''}`}>
       <h1 className="text-5xl font-semibold">
         Sign In
       </h1>

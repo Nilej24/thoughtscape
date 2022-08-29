@@ -26,8 +26,12 @@ function Header() {
             <HeaderButton iconElement={<FaSignOutAlt />} text='sign out' />
           ) : (
             <>
-              <HeaderButton iconElement={<FaSignInAlt />} text='sign in' />
-              <HeaderButton iconElement={<FaUser />} text='register' />
+              <Link to="/signin">
+                <HeaderButton iconElement={<FaSignInAlt />} text='sign in' />
+              </Link>
+              <Link to="/register">
+                <HeaderButton iconElement={<FaUser />} text='register' />
+              </Link>
             </>
           )}
         </div>
