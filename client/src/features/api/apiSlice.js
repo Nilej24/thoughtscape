@@ -21,10 +21,21 @@ export const apiSlice = createApi({
       }),
     }),
 
+    getUserDecks: builder.query({
+      query: ({ token }) => ({
+        url: '/decks',
+        method: 'GET',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+    }),
+
   }),
 });
 
 export const {
   useRegisterUserMutation,
   useSigninUserMutation,
+  useGetUserDecksQuery,
 } = apiSlice;

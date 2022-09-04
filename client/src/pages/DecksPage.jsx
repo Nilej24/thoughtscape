@@ -1,5 +1,6 @@
 import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
+import { useGetUserDecksQuery } from '../features/api/apiSlice';
 
 function Deck({ name }) {
   return (
@@ -25,6 +26,14 @@ function Deck({ name }) {
 }
 
 function DecksPage() {
+  const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyYzZhNGUyM2Q0NDMzM2E4Y2MwZTVhNCIsImlhdCI6MTY2MjMwMDg0MSwiZXhwIjoxNjY0ODkyODQxfQ.9Uyp_jjUmgLN8ZLPUaUkxjyfwV0S-XUIIWV7GPfEiiM' });
+
+  const listContent = isSuccess ? (
+    decks.map((deck) => <Deck key={deck._id} name={deck.name} />)
+  ) : (
+    'loading xdddddddddd'
+  )
+
   return (
     <section className="container mx-auto p-4 flex flex-col">
       <h1 className="text-3xl font-semibold text-center py-3">
@@ -43,9 +52,7 @@ function DecksPage() {
             <span>all decks</span>
           </label>
        </li>
-        <Deck name="chem" />
-        <Deck name="maths flashcards for some reason?" />
-        <Deck name="Physics is shit" />
+        {listContent}
       </ul>
       <button className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-slate-400 self-center md:self-start md:ml-16 hover:bg-slate-300">
         +
