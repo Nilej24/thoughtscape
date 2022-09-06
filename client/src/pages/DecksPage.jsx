@@ -1,8 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
+
 import { useGetUserDecksQuery } from '../features/api/apiSlice';
 
-function Deck({ name }) {
+function Deck({ name, deckId }) {
+  const navigate = useNavigate();
+
   return (
     <li>
       <div className="border"></div>
@@ -10,7 +14,7 @@ function Deck({ name }) {
         <input type="checkbox" className="w-6 h-6 shrink-0" />
         <span>{name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
-          <button className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
+          <button onClick={() => navigate(`./${deckId}`)} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
             <FaEdit />
           </button>
           <button className="rounded p-3 text-lg drop-shadow bg-purple-500 hover:bg-purple-300">
@@ -29,7 +33,7 @@ function DecksPage() {
   const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyYzZhNGUyM2Q0NDMzM2E4Y2MwZTVhNCIsImlhdCI6MTY2MjMwMDg0MSwiZXhwIjoxNjY0ODkyODQxfQ.9Uyp_jjUmgLN8ZLPUaUkxjyfwV0S-XUIIWV7GPfEiiM' });
 
   const listContent = isSuccess ? (
-    decks.map((deck) => <Deck key={deck._id} name={deck.name} />)
+    decks.map((deck) => <Deck key={deck._id} name={deck.name} deckId={deck._id} />)
   ) : (
     'loading xdddddddddd'
   )
