@@ -30,7 +30,7 @@ function Deck({ name, deckId }) {
 }
 
 function DecksPage() {
-  const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyYzZhNGUyM2Q0NDMzM2E4Y2MwZTVhNCIsImlhdCI6MTY2MjMwMDg0MSwiZXhwIjoxNjY0ODkyODQxfQ.9Uyp_jjUmgLN8ZLPUaUkxjyfwV0S-XUIIWV7GPfEiiM' });
+  const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyYzZhNGUyM2Q0NDMzM2E4Y2MwZTVhNCIsImlhdCI6MTY2ODAzNjEzNSwiZXhwIjoxNjcwNjI4MTM1fQ.2eVwDEF9cnajcaIvIEA7XLLmYFmweOCAWloO1aP8gdw' });
 
   const listContent = isSuccess ? (
     decks.map((deck) => <Deck key={deck._id} name={deck.name} deckId={deck._id} />)
