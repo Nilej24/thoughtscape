@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRegisterUserMutation } from '../features/api/apiSlice';
 
 function Register() {
@@ -8,42 +9,53 @@ function Register() {
   const [pwd, setPwd] = useState('');
   const [pwd2, setPwd2] = useState('');
 
+  // boring nav function
+  const navigate = useNavigate();
+
   // boring change handlers
   const onNameChange = (ev) => setName(ev.target.value);
   const onEmailChange = (ev) => setEmail(ev.target.value);
   const onPwdChange = (ev) => setPwd(ev.target.value);
   const onPwd2Change = (ev) => setPwd2(ev.target.value);
 
-  // cool api hook
-  const [register, { isLoading }] = useRegisterUserMutation();
-
   // for confirming pwd
   const pwd2Ref = useRef();
-
-  // reset validity for confirming password
   useEffect(() => {
-    pwd2Ref.current.setCustomValidity('');
+    pwd2Ref.current.setCustomValidity(''); // reset validity for confirming password
   }, [pwd, pwd2]);
+
+  // cool api hook
+  const [register, { isLoading }] = useRegisterUserMutation();
 
   // submit
   const onSubmit = async (ev) => {
     try {
       ev.preventDefault();
       
+      // check passwords match in both boxes
       if (pwd !== pwd2) {
         pwd2Ref.current.setCustomValidity('Please type the same password into both boxes.');
         pwd2Ref.current.reportValidity();
         return;
       }
 
+      // get token from REST api
       const user = await register({ name, email, password: pwd }).unwrap();
+
+      // save token and stuff in localStorage
       console.log(user);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // redirect to 'your decks'
+      navigate('/');
+
     } catch (err) {
       // toast later
-      console.log('lollllllll', err.data.message);
+      console.log('popup -> ', err.data.message);
     }
   };
 
+  // page layout
   return (
     <section className={`flex flex-col items-center py-10 px-5 ${isLoading ? 'opacity-50' : ''}`}>
       <h1 className="text-5xl font-semibold">

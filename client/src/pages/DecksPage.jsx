@@ -14,7 +14,7 @@ function Deck({ name, deckId }) {
         <input type="checkbox" className="w-6 h-6 shrink-0" />
         <span>{name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
-          <button onClick={() => navigate(`./${deckId}`)} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
+          <button onClick={() => navigate(`/${deckId}`)} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
             <FaEdit />
           </button>
           <button className="rounded p-3 text-lg drop-shadow bg-purple-500 hover:bg-purple-300">

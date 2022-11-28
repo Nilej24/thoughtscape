@@ -1,5 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { FaSignOutAlt, FaSignInAlt, FaUser } from 'react-icons/fa';
+
+import { unsetUser, selectUser } from '../features/users/usersSlice';
 
 function HeaderButton({ iconElement, text }) {
   return (
@@ -11,7 +14,23 @@ function HeaderButton({ iconElement, text }) {
 }
 
 function Header() {
-  const user = false;
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector(selectUser);
+
+  // click handler for signout button
+  const onSignoutClick = () => {
+
+    // remove user from local storage
+    localStorage.removeItem('user');
+    // and from redux
+    dispatch(unsetUser());
+
+    // navigate to sign in page
+    navigate('/signin');
+  }
 
   return (
     <nav className="bg-cyan-600 drop-shadow-xl border-b-4 border-black">
@@ -23,7 +42,9 @@ function Header() {
         </div>
         <div className="hidden sm:flex space-y-0 flex-row space-x-2 md:space-x-5">
           {!!user ? (
-            <HeaderButton iconElement={<FaSignOutAlt />} text='sign out' />
+            <div onClick={onSignoutClick}>
+              <HeaderButton iconElement={<FaSignOutAlt />} text='sign out' />
+            </div>
           ) : (
             <>
               <Link to="/signin">

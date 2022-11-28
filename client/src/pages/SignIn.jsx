@@ -1,26 +1,47 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useSigninUserMutation } from '../features/api/apiSlice';
+import { setUser } from '../features/users/usersSlice';
 
 function SignIn() {
+  // state
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
+  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  // change handlers
   const onEmailChange = (ev) => setEmail(ev.target.value);
   const onPwdChange = (ev) => setPwd(ev.target.value);
 
+  // high tech rtk hooks for the REST api
   const [signin, { isLoading }] = useSigninUserMutation();
 
+  // submit function
   const onSubmit = async (ev) => {
     try {
       ev.preventDefault();
+
+      // get user
       const user = await signin({ email, password: pwd }).unwrap();
-      console.log(user);
+      
+      // save in localStorage
+      localStorage.setItem('user', JSON.stringify(user));
+      // and in redux
+      dispatch(setUser(user));
+
+      // redirect to decks page
+      navigate('/');
+
     } catch (err) {
       // gonna make it do a popup or whatever later
-      console.log('error xddddd', err.data.message);
+      console.log('popup -> ', err.data.message);
     }
   };
 
+  // the ui
   return (
     <section className={`flex flex-col items-center py-10 px-5 ${isLoading ? 'opacity-50' : ''}`}>
       <h1 className="text-5xl font-semibold">
