@@ -1,10 +1,13 @@
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
 import { useGetUserDecksQuery } from '../features/api/apiSlice';
+import { selectUserToken } from '../features/users/usersSlice';
 
 function Deck({ name, deckId }) {
+
   const navigate = useNavigate();
 
   return (
@@ -30,7 +33,10 @@ function Deck({ name, deckId }) {
 }
 
 function DecksPage() {
-  const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyYzZhNGUyM2Q0NDMzM2E4Y2MwZTVhNCIsImlhdCI6MTY2ODAzNjEzNSwiZXhwIjoxNjcwNjI4MTM1fQ.2eVwDEF9cnajcaIvIEA7XLLmYFmweOCAWloO1aP8gdw' });
+
+  const token = useSelector(selectUserToken);
+
+  const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token });
 
   const listContent = isSuccess ? (
     decks.map((deck) => <Deck key={deck._id} name={deck.name} deckId={deck._id} />)
