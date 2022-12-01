@@ -4,28 +4,38 @@ import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
 import { useGetUserDecksQuery } from '../features/api/apiSlice';
-import { selectUserToken } from '../features/users/usersSlice';
+import { selectUser, selectUserToken } from '../features/users/usersSlice';
 
-function Deck({ name, deckId }) {
+function Deck({ deck }) {
+
+  const user = useSelector(selectUser);
 
   const navigate = useNavigate();
+
+  console.log(deck);
 
   return (
     <li>
       <div className="border"></div>
       <label className="flex items-center space-x-5 p-8 cursor-pointer hover:bg-gray-100 relative group">
         <input type="checkbox" className="w-6 h-6 shrink-0" />
-        <span>{name}</span>
+        <span>{deck.name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
-          <button onClick={() => navigate(`/${deckId}`)} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
-            <FaEdit />
-          </button>
-          <button className="rounded p-3 text-lg drop-shadow bg-purple-500 hover:bg-purple-300">
-            <FaUserEdit />
-          </button>
-          <button className="rounded p-3 text-lg drop-shadow bg-red-500 hover:bg-red-300">
-            <FaTrash />
-          </button>
+          { (deck.owner === user._id || deck.editors.includes(user._id)) && // shows for editors and owners
+            <button onClick={() => navigate(`/${deck._id}`)} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
+              <FaEdit />
+            </button>
+          }
+          { deck.owner === user._id && // shows only for owners
+            <>
+              <button className="rounded p-3 text-lg drop-shadow bg-purple-500 hover:bg-purple-300">
+                <FaUserEdit />
+              </button>
+              <button className="rounded p-3 text-lg drop-shadow bg-red-500 hover:bg-red-300">
+                <FaTrash />
+              </button>
+            </>
+          }
         </div>
       </label>
     </li>
@@ -39,7 +49,7 @@ function DecksPage() {
   const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token });
 
   const listContent = isSuccess ? (
-    decks.map((deck) => <Deck key={deck._id} name={deck.name} deckId={deck._id} />)
+    decks.map((deck) => <Deck key={deck._id} deck={deck} />)
   ) : (
     'loading xdddddddddd'
   )

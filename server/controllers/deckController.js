@@ -173,6 +173,9 @@ const setUserPermission = asyncHandler(async (req, res) => {
       break;
     case 'none':
       break;
+    default:
+      res.status(400);
+      throw new Error('invalid permission string given');
   }
 
   // update deck
