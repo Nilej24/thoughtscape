@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
@@ -6,19 +7,19 @@ import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 import { useGetUserDecksQuery } from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
 
-function Deck({ deck }) {
+// display for each deck
+function Deck({ deck, selected=false, changeSelection }) {
 
+  // for displaying buttons based on user permissions
   const user = useSelector(selectUser);
 
   const navigate = useNavigate();
-
-  console.log(deck);
 
   return (
     <li>
       <div className="border"></div>
       <label className="flex items-center space-x-5 p-8 cursor-pointer hover:bg-gray-100 relative group">
-        <input type="checkbox" className="w-6 h-6 shrink-0" />
+        <input type="checkbox" checked={selected} onChange={changeSelection} className="w-6 h-6 shrink-0" />
         <span>{deck.name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
           { (deck.owner === user._id || deck.editors.includes(user._id)) && // shows for editors and owners
@@ -42,21 +43,74 @@ function Deck({ deck }) {
   );
 }
 
+// the whole page
 function DecksPage() {
 
+  const [deckSelections, setDeckSelections] = useState([]);
   const token = useSelector(selectUserToken);
+  const navigate = useNavigate();
 
+  // fetch decks from database
   const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token });
 
+  // send to sign in page if not logged in
+  useEffect(() => {
+    if(!token)
+      navigate('/signin');
+  }, []);
+
+  // for setting all values in deckSelections array
+  const setAllSelectionsTo = (val) => () => {
+
+    if(!decks)
+      return;
+
+    setDeckSelections([]);
+
+    decks.forEach(() => {
+      setDeckSelections(deckSelections => ([
+        ...deckSelections,
+        val,
+      ]));
+    });
+
+  };
+
+  // initialise deckSelections array as all false
+  useEffect(setAllSelectionsTo(false), [decks]); // 'decks' only changes when loading data
+
+  // creates function for changing state from within each deck component
+  const createChangeSelection = (deckIndex) => () => {
+    // clone array
+    const newArr = [...deckSelections];
+    // change value in clone
+    newArr[deckIndex] = !newArr[deckIndex];
+    // set new array
+    setDeckSelections(newArr);
+  };
+
+  // create the list of decks using the deck component
   const listContent = isSuccess ? (
-    decks.map((deck) => <Deck key={deck._id} deck={deck} />)
+    decks.map((deck, index) => <Deck key={deck._id} deck={deck} selected={deckSelections[index]} changeSelection={createChangeSelection(index)} />)
   ) : (
     'loading xdddddddddd'
   )
+  
+  // to see if all decks are selected
+  const allSelected = deckSelections.every(deck => deck === true);
+
+  // to select / unselect all decks
+  const onAllDecksClick = () => {
+    if(allSelected) {
+      setAllSelectionsTo(false)();
+    } else {
+      setAllSelectionsTo(true)();
+    }
+  }
 
   return (
     <section className="container mx-auto p-4 flex flex-col">
-      <h1 className="text-3xl font-semibold text-center py-3">
+      <h1 onClick={() => console.log(deckSelections)} className="text-3xl font-semibold text-center py-3">
         Your Decks
       </h1>
       <button className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-slate-400 self-center md:self-start hover:bg-slate-300">
@@ -68,7 +122,7 @@ function DecksPage() {
       <ul>
         <li>
           <label className="flex items-center space-x-5 p-8 cursor-pointer hover:bg-gray-100">
-            <input type="checkbox" className="w-6 h-6" />
+            <input type="checkbox" checked={allSelected} onChange={onAllDecksClick} className="w-6 h-6" />
             <span>all decks</span>
           </label>
        </li>
