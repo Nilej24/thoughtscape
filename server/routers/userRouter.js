@@ -3,6 +3,7 @@ const express = require('express');
 const { registerUser, loginUser } = require('../controllers/userController');
 
 // create router
+// /api/users
 const router = express.Router();
 
 // use controller on routes

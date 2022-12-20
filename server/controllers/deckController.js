@@ -19,10 +19,27 @@ const getDecks = asyncHandler(async (req, res) => {
   res.json(decks);
 });
 
-// get a deck
+// get a deck for the user to edit
 // GET /api/decks/:id
 // deck editor page
-// do this ##############################################################################
+const getDeck = asyncHandler(async (req, res) => {
+  const deck = await Deck.findById(req.params.id);
+
+  // check deck exists
+  if (!deck) {
+    res.status(400);
+    throw new Error('deck not found');
+  }
+
+  // check user can edit deck
+  if (!deck.canBeEditedBy(req.user._id)) {
+    res.status(401);
+    throw new Error('user not authorized to edit deck');
+  }
+
+  // return deck
+  res.json(deck);
+});
 
 // create a deck for the user
 // POST /api/decks
@@ -211,6 +228,7 @@ const deleteDeck = asyncHandler(async (req, res) => {
 
 module.exports = {
   getDecks,
+  getDeck,
   createDeck,
   getDeckCards,
   createCard,

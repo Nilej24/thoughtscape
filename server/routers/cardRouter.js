@@ -6,6 +6,7 @@ const {
   deleteCard,
 } = require('../controllers/cardController');
 
+// /api/cards
 const router = express.Router();
 
 router.route('/:id')
