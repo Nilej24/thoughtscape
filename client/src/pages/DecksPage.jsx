@@ -15,6 +15,11 @@ function Deck({ deck, selected=false, changeSelection }) {
 
   const navigate = useNavigate();
 
+  const onClick = (ev) => {
+    // load the deck editor page
+    navigate(`/edit/${deck._id}`);
+  };
+
   return (
     <li>
       <div className="border"></div>
@@ -23,7 +28,7 @@ function Deck({ deck, selected=false, changeSelection }) {
         <span>{deck.name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
           { (deck.owner === user._id || deck.editors.includes(user._id)) && // shows for editors and owners
-            <button onClick={() => navigate(`/${deck._id}`)} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
+            <button onClick={onClick} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
               <FaEdit />
             </button>
           }
@@ -48,10 +53,11 @@ function DecksPage() {
 
   const [deckSelections, setDeckSelections] = useState([]);
   const token = useSelector(selectUserToken);
-  const navigate = useNavigate();
 
   // fetch decks from database
   const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token });
+
+  const navigate = useNavigate();
 
   // send to sign in page if not logged in
   useEffect(() => {
@@ -59,8 +65,8 @@ function DecksPage() {
       navigate('/signin');
   }, []);
 
-  // for setting all values in deckSelections array
-  const setAllSelectionsTo = (val) => () => {
+  // set all values in deckSelections array
+  const setAllSelectionsTo = (val) => {
 
     if(!decks)
       return;
@@ -77,7 +83,7 @@ function DecksPage() {
   };
 
   // initialise deckSelections array as all false
-  useEffect(setAllSelectionsTo(false), [decks]); // 'decks' only changes when loading data
+  useEffect(() => setAllSelectionsTo(false), [decks]); // 'decks' only changes when loading data
 
   // creates function for changing state from within each deck component
   const createChangeSelection = (deckIndex) => () => {
@@ -102,9 +108,9 @@ function DecksPage() {
   // to select / unselect all decks
   const onAllDecksClick = () => {
     if(allSelected) {
-      setAllSelectionsTo(false)();
+      setAllSelectionsTo(false);
     } else {
-      setAllSelectionsTo(true)();
+      setAllSelectionsTo(true);
     }
   }
 

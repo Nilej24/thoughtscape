@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
 
 function ListCard({ question, answer }) {
@@ -15,8 +16,13 @@ function ListCard({ question, answer }) {
   );
 }
 
+// page shown on /edit/:deckId
 function DeckEditPage() {
-  const deckName = 'really long deck name like really this is a long deck name';
+  // get deck id from url
+  const { deckId } = useParams();
+
+  const deckName = deckId;
+  // get deck by id ############################################################3
 
   return (
     <>

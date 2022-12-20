@@ -19,6 +19,11 @@ const getDecks = asyncHandler(async (req, res) => {
   res.json(decks);
 });
 
+// get a deck
+// GET /api/decks/:id
+// deck editor page
+// do this ##############################################################################
+
 // create a deck for the user
 // POST /api/decks
 // 'your decks' page
