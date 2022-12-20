@@ -55,7 +55,7 @@ function DecksPage() {
   const token = useSelector(selectUserToken);
 
   // fetch decks from database
-  const { data: decks, isLoading, isSuccess } = useGetUserDecksQuery({ token });
+  const { data: decks, isSuccess } = useGetUserDecksQuery({ token });
 
   const navigate = useNavigate();
 

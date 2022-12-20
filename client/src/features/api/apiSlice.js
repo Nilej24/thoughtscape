@@ -31,11 +31,19 @@ export const apiSlice = createApi({
       }),
     }),
 
-    // get deck ################################################################
+    getDeck: builder.query({
+      query: ({ userToken, deckId }) => ({
+        url: `/decks/${deckId}`,
+        method: 'GET',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+      }),
+    }),
 
     getDeckCards: builder.query({
       query: ({ userToken, deckId }) => ({
-        url: `/decks/${deckId}`,
+        url: `/decks/${deckId}/cards`,
         method: 'GET',
         headers: {
           authorization: `Bearer ${userToken}`,
@@ -49,5 +57,6 @@ export const {
   useRegisterUserMutation,
   useSigninUserMutation,
   useGetUserDecksQuery,
+  useGetDeckQuery,
   useGetDeckCardsQuery,
 } = apiSlice;

@@ -65,8 +65,8 @@ const createDeck = asyncHandler(async (req, res) => {
 });
 
 // get array of cards in a deck
-// GET /api/decks/:id
-// deck page
+// GET /api/decks/:id/cards
+// deck editor page
 const getDeckCards = asyncHandler(async (req, res) => {
   const deck = await Deck.findById(req.params.id);
 

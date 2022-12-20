@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
+import { useGetDeckQuery } from '../features/api/apiSlice';
+import { selectUserToken } from '../features/users/usersSlice';
 
 function ListCard({ question, answer }) {
   return (
@@ -18,11 +21,18 @@ function ListCard({ question, answer }) {
 
 // page shown on /edit/:deckId
 function DeckEditPage() {
+
   // get deck id from url
   const { deckId } = useParams();
 
-  const deckName = deckId;
-  // get deck by id ############################################################3
+  // get user token for fetching data
+  const userToken = useSelector(selectUserToken);
+
+  // fetch deck so we can display its name
+  const { data: deck, isSuccess: deckLoaded } = useGetDeckQuery({ userToken, deckId });
+
+  // set name displayed in the ui
+  const deckName = deckLoaded ? deck.name : 'loading...';
 
   return (
     <>
