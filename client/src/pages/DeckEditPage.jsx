@@ -3,19 +3,19 @@ import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
-import { useGetDeckQuery } from '../features/api/apiSlice';
+import { useGetDeckQuery, useGetDeckCardsQuery } from '../features/api/apiSlice';
 import { selectUserToken } from '../features/users/usersSlice';
 
-function ListCard({ question, answer }) {
+function ListCard({ card }) {
   return (
-    <li className="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
+    <div className="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
       <p className="w-1/2 text-start pr-2">
-        {question}
+        {card.front}
       </p>
       <p className="w-1/2 text-end pl-2">
-        {answer}
+        {card.back}
       </p>
-    </li>
+    </div>
   );
 }
 
@@ -30,9 +30,19 @@ function DeckEditPage() {
 
   // fetch deck so we can display its name
   const { data: deck, isSuccess: deckLoaded } = useGetDeckQuery({ userToken, deckId });
+  // fetch cards
+  const { data: cards, isSuccess: cardsLoaded } = useGetDeckCardsQuery({ userToken, deckId });
 
   // set name displayed in the ui
   const deckName = deckLoaded ? deck.name : 'loading...';
+
+  const cardList = cardsLoaded ? cards.map((card) => {
+    return (
+      <li key={card._id}>
+        <ListCard card={card} />
+      </li>
+    );
+  }) : 'loading cards...';
 
   return (
     <>
@@ -58,30 +68,7 @@ function DeckEditPage() {
             </h3>
           </div>
           <ul className="py-2 px-5">
-            <ListCard
-              question="isnt that so cool"
-              answer="Ipsum odio quia aspernatur esse quia magnam corporis, molestias Repellendus"
-            />
-            <ListCard
-              question="another question?"
-              answer="another answer."
-            />
-            <ListCard
-              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
-              answer="shush"
-            />
-            <ListCard
-              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
-              answer="Consectetur accusamus vitae dignissimos sapiente suscipit at Cum dicta rem in laboriosam eveniet Rerum vel fugit debitis natus saepe? Repudiandae"
-            />
-            <ListCard
-              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
-              answer="Consectetur accusamus vitae dignissimos sapiente suscipit at Cum dicta rem in laboriosam eveniet Rerum vel fugit debitis natus saepe? Repudiandae"
-            />
-            <ListCard
-              question="Elit ad consequatur voluptate ea fugiat Odio veniam commodi provident facilis omnis! Neque nostrum deleniti nulla hic modi Sapiente id"
-              answer="Consectetur accusamus vitae dignissimos sapiente suscipit at Cum dicta rem in laboriosam eveniet Rerum vel fugit debitis natus saepe? Repudiandae"
-            />
+            {cardList}
             <div className="border-b border-gray-300" />
           </ul>
           <div className="px-7 py-5">
