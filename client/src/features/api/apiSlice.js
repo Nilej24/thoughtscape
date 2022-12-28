@@ -50,6 +50,20 @@ export const apiSlice = createApi({
         },
       }),
     }),
+
+    createEmptyCard: builder.mutation({
+      query: ({ userToken, deckId }) => ({
+        url: `/decks/${deckId}`,
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+        body: {
+          front: '',
+          back: '',
+        },
+      }),
+    }),
   }),
 });
 
@@ -59,4 +73,5 @@ export const {
   useGetUserDecksQuery,
   useGetDeckQuery,
   useGetDeckCardsQuery,
+  useCreateEmptyCardMutation,
 } = apiSlice;

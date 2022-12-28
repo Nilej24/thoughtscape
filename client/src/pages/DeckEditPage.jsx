@@ -3,10 +3,11 @@ import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
-import { useGetDeckQuery, useGetDeckCardsQuery } from '../features/api/apiSlice';
+import { useGetDeckQuery, useGetDeckCardsQuery, useCreateEmptyCardMutation } from '../features/api/apiSlice';
 import { selectUserToken } from '../features/users/usersSlice';
 
 function ListCard({ card }) {
+  // REMINDER FOR LATER you can use backticks
   return (
     <div className="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
       <p className="w-1/2 text-start pr-2">
@@ -22,6 +23,10 @@ function ListCard({ card }) {
 // page shown on /edit/:deckId
 function DeckEditPage() {
 
+  // state
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+
   // get deck id from url
   const { deckId } = useParams();
 
@@ -33,9 +38,26 @@ function DeckEditPage() {
   // fetch cards
   const { data: cards, isSuccess: cardsLoaded } = useGetDeckCardsQuery({ userToken, deckId });
 
+  // mutations
+  const [createCard, { isLoading: creatingCard }] = useCreateEmptyCardMutation();
+
+  // typing handlers
+  const onQuestionChange = (ev) => setQuestion(ev.target.value);
+  const onAnswerChange = (ev) => setAnswer(ev.target.value);
+
+  // click handlers
+  const onNewCardClick = async () => {
+    try {
+      await createCard({ userToken, deckId });
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  }
+
   // set name displayed in the ui
   const deckName = deckLoaded ? deck.name : 'loading...';
 
+  // card list displayed
   const cardList = cardsLoaded ? cards.map((card) => {
     return (
       <li key={card._id}>
@@ -72,7 +94,7 @@ function DeckEditPage() {
             <div className="border-b border-gray-300" />
           </ul>
           <div className="px-7 py-5">
-            <button className="w-full drop-shadow-lg flex justify-center py-4 text-3xl font-medium bg-green-500 self-center hover:bg-green-300">
+            <button onClick={onNewCardClick} className="w-full drop-shadow-lg flex justify-center py-4 text-3xl font-medium bg-green-500 self-center hover:bg-green-300">
               +
             </button>
           </div>
@@ -85,13 +107,13 @@ function DeckEditPage() {
             <div className="text-lg font-extralight self-start">
               question
             </div>
-            <textarea rows="9" className="bg-gray-50 focus:outline-none" value="how do I edit a card" />
+            <textarea onChange={onQuestionChange} rows="9" className="bg-gray-50 focus:outline-none" value={question}/>
           </div>
           <div className="w-3/4 h-64 mx-auto bg-gray-100 rounded drop-shadow-md mt-6 flex flex-col py-2 px-3">
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea rows="9" className="bg-gray-50 focus:outline-none" value="select one first, you idiot (scroll down on mobile)" />
+            <textarea onChange={onAnswerChange} rows="9" className="bg-gray-50 focus:outline-none" value={answer}/>
           </div>
           <div className="grid grid-rows-2 grid-cols-2 gap-3 pt-8 pb-12 lg:flex lg:justify-center">
             <div>
@@ -103,7 +125,7 @@ function DeckEditPage() {
               </button>
             </div>
             <div>
-              <button className="flex items-center space-x-1 p-3 rounded drop-shadow bg-green-500 font-medium hover:bg-green-300 active:bg-green-300">
+              <button onClick={onNewCardClick} className="flex items-center space-x-1 p-3 rounded drop-shadow bg-green-500 font-medium hover:bg-green-300 active:bg-green-300">
                 <span className="text-xl">
                   <FaPlusSquare />
                 </span>
