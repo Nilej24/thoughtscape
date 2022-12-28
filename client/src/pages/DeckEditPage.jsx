@@ -85,8 +85,13 @@ function DeckEditPage() {
 
   // card list displayed
   const cardList = cardsLoaded ? cards.map((card) => {
+
+    // for setting current card when clicking
+    const onClick = () => setCurrentCard(card._id);
+
+    // ui for one card
     return (
-      <li key={card._id}>
+      <li onClick={onClick} key={card._id}>
         <ListCard card={card} />
       </li>
     );
@@ -144,7 +149,7 @@ function DeckEditPage() {
           </div>
           <div className="grid grid-rows-2 grid-cols-2 gap-3 pt-8 pb-12 lg:flex lg:justify-center">
             <div>
-              <button className="ml-auto flex items-center space-x-1 p-3 rounded drop-shadow bg-sky-500 font-medium hover:bg-sky-300 active:bg-sky-300">
+              <button onClick={onSaveCardClick} className="ml-auto flex items-center space-x-1 p-3 rounded drop-shadow bg-sky-500 font-medium hover:bg-sky-300 active:bg-sky-300">
                 <span className="text-xl">
                   <IoIosSave />
                 </span>
