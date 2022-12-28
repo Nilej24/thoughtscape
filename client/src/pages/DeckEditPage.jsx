@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -6,10 +6,10 @@ import { IoIosSave } from 'react-icons/io';
 import { useGetDeckQuery, useGetDeckCardsQuery, useCreateEmptyCardMutation, useUpdateCardMutation } from '../features/api/apiSlice';
 import { selectUserToken } from '../features/users/usersSlice';
 
-function ListCard({ card }) {
+function ListCard({ card, selected }) {
   // REMINDER FOR LATER you can use backticks
   return (
-    <div className="border-t border-gray-300 flex py-2 px-3 cursor-pointer hover:bg-gray-100">
+    <div className={`border-t border-gray-300 flex py-2 px-3 cursor-pointer ${selected ? 'bg-gray-300' :'hover:bg-gray-100'}`}>
       <p className="w-1/2 text-start pr-2">
         {card.front}
       </p>
@@ -86,13 +86,22 @@ function DeckEditPage() {
   // card list displayed
   const cardList = cardsLoaded ? cards.map((card) => {
 
+    // for changing appearance of the current selected card
+    const selected = card._id === currentCard;
+
     // for setting current card when clicking
-    const onClick = () => setCurrentCard(card._id);
+    const onClick = () => {
+      if (selected) return;
+
+      setCurrentCard(card._id);
+      setQuestion(card.front);
+      setAnswer(card.back);
+    }
 
     // ui for one card
     return (
       <li onClick={onClick} key={card._id}>
-        <ListCard card={card} />
+        <ListCard card={card} selected={selected} />
       </li>
     );
   }) : 'loading cards...';
