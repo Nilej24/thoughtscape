@@ -3,7 +3,7 @@ import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
-import { useGetDeckQuery, useGetDeckCardsQuery, useCreateEmptyCardMutation } from '../features/api/apiSlice';
+import { useGetDeckQuery, useGetDeckCardsQuery, useCreateEmptyCardMutation, useUpdateCardMutation } from '../features/api/apiSlice';
 import { selectUserToken } from '../features/users/usersSlice';
 
 function ListCard({ card }) {
@@ -26,6 +26,7 @@ function DeckEditPage() {
   // state
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
+  const [currentCard, setCurrentCard] = useState('');
 
   // get deck id from url
   const { deckId } = useParams();
@@ -40,19 +41,44 @@ function DeckEditPage() {
 
   // mutations
   const [createCard, { isLoading: creatingCard }] = useCreateEmptyCardMutation();
+  const [updateCard, { usLoading: updatingCard }] = useUpdateCardMutation();
 
   // typing handlers
   const onQuestionChange = (ev) => setQuestion(ev.target.value);
   const onAnswerChange = (ev) => setAnswer(ev.target.value);
 
   // click handlers
-  const onNewCardClick = async () => {
+  const onSaveCardClick = async () => {
     try {
-      await createCard({ userToken, deckId });
+      const newCard = await updateCard({
+        userToken,
+        cardId: currentCard,
+        front: question,
+        back: answer,
+        newDeckId: deckId,
+      }).unwrap();
+      console.log(newCard);
     } catch (err) {
       console.log('popup -> ', err.data.message);
     }
-  }
+  };
+
+  const onNewCardClick = async () => {
+    try {
+      const newCard = await createCard({ userToken, deckId }).unwrap();
+      console.log(newCard);
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
+  const onDeleteCardClick = async () => {
+    try {
+
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
 
   // set name displayed in the ui
   const deckName = deckLoaded ? deck.name : 'loading...';
@@ -66,6 +92,7 @@ function DeckEditPage() {
     );
   }) : 'loading cards...';
 
+  // the main ui thing
   return (
     <>
       <h1 className="text-3xl font-semibold flex justify-center items-center space-x-4 py-7 px-5 container mx-auto">
