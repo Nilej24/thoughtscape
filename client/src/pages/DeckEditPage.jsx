@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -28,6 +28,9 @@ function DeckEditPage() {
   const [answer, setAnswer] = useState('');
   const [currentCard, setCurrentCard] = useState('');
 
+  // ref for focusing text box
+  const questionBoxRef = useRef(null);
+
   // get deck id from url
   const { deckId } = useParams();
 
@@ -37,15 +40,23 @@ function DeckEditPage() {
   // fetch deck so we can display its name
   const { data: deck, isSuccess: deckLoaded } = useGetDeckQuery({ userToken, deckId });
   // fetch cards
-  const { data: cards, isSuccess: cardsLoaded } = useGetDeckCardsQuery({ userToken, deckId });
+  const { data: cards, isSuccess: cardsLoaded, isLoading: cardsLoading } = useGetDeckCardsQuery({ userToken, deckId });
 
   // mutations
   const [createCard, { isLoading: creatingCard }] = useCreateEmptyCardMutation();
-  const [updateCard, { usLoading: updatingCard }] = useUpdateCardMutation();
+  const [updateCard, { isLoading: updatingCard }] = useUpdateCardMutation();
 
   // typing handlers
   const onQuestionChange = (ev) => setQuestion(ev.target.value);
   const onAnswerChange = (ev) => setAnswer(ev.target.value);
+
+  // for changing current card
+  const changeCard = (card) => {
+    setCurrentCard(card._id);
+    setQuestion(card.front);
+    setAnswer(card.back);
+    questionBoxRef.current.focus();
+  };
 
   // click handlers
   const onSaveCardClick = async () => {
@@ -66,7 +77,7 @@ function DeckEditPage() {
   const onNewCardClick = async () => {
     try {
       const newCard = await createCard({ userToken, deckId }).unwrap();
-      console.log(newCard);
+      changeCard(newCard);
     } catch (err) {
       console.log('popup -> ', err.data.message);
     }
@@ -83,6 +94,17 @@ function DeckEditPage() {
   // set name displayed in the ui
   const deckName = deckLoaded ? deck.name : 'loading...';
 
+  // set currentCard on first load
+  useEffect(() => {
+    if (cardsLoading) return;
+
+    if (cards[0]) {
+      changeCard(cards[0]);
+    } else {
+      onNewCardClick();
+    }
+  }, [cardsLoading]);
+
   // card list displayed
   const cardList = cardsLoaded ? cards.map((card) => {
 
@@ -93,9 +115,7 @@ function DeckEditPage() {
     const onClick = () => {
       if (selected) return;
 
-      setCurrentCard(card._id);
-      setQuestion(card.front);
-      setAnswer(card.back);
+      changeCard(card);
     }
 
     // ui for one card
@@ -148,7 +168,7 @@ function DeckEditPage() {
             <div className="text-lg font-extralight self-start">
               question
             </div>
-            <textarea onChange={onQuestionChange} rows="9" className="bg-gray-50 focus:outline-none" value={question}/>
+            <textarea onChange={onQuestionChange} ref={questionBoxRef} rows="9" className="bg-gray-50 focus:outline-none" value={question}/>
           </div>
           <div className="w-3/4 h-64 mx-auto bg-gray-100 rounded drop-shadow-md mt-6 flex flex-col py-2 px-3">
             <div className="text-lg font-extralight self-start">
