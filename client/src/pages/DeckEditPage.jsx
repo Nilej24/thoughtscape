@@ -168,13 +168,13 @@ function DeckEditPage() {
             <div className="text-lg font-extralight self-start">
               question
             </div>
-            <textarea onChange={onQuestionChange} ref={questionBoxRef} rows="9" className="bg-gray-50 focus:outline-none" value={question}/>
+            <textarea onChange={onQuestionChange} ref={questionBoxRef} placeholder="[ this is a new card, write your question here ]" rows="9" className="bg-gray-50 focus:outline-none" value={question}/>
           </div>
           <div className="w-3/4 h-64 mx-auto bg-gray-100 rounded drop-shadow-md mt-6 flex flex-col py-2 px-3">
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea onChange={onAnswerChange} rows="9" className="bg-gray-50 focus:outline-none" value={answer}/>
+            <textarea onChange={onAnswerChange} placeholder="[ and your answer here ]" rows="9" className="bg-gray-50 focus:outline-none" value={answer}/>
           </div>
           <div className="grid grid-rows-2 grid-cols-2 gap-3 pt-8 pb-12 lg:flex lg:justify-center">
             <div>
