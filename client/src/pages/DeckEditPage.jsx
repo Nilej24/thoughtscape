@@ -3,17 +3,23 @@ import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
-import { useGetDeckQuery, useGetDeckCardsQuery, useCreateEmptyCardMutation, useUpdateCardMutation } from '../features/api/apiSlice';
+import {
+  useGetDeckQuery,
+  useGetDeckCardsQuery,
+  useCreateEmptyCardMutation,
+  useUpdateCardMutation,
+  useDeleteCardMutation,
+} from '../features/api/apiSlice';
 import { selectUserToken } from '../features/users/usersSlice';
 
 function ListCard({ card, selected }) {
   // REMINDER FOR LATER you can use backticks
   return (
     <div className={`border-t border-gray-300 flex py-2 px-3 cursor-pointer ${selected ? 'bg-gray-300' :'hover:bg-gray-100'}`}>
-      <p className="w-1/2 text-start pr-2">
+      <p className="w-1/2 text-start pr-2 whitespace-pre-line">
         {card.front}
       </p>
-      <p className="w-1/2 text-end pl-2">
+      <p className="w-1/2 text-end pl-2 whitespace-pre-line">
         {card.back}
       </p>
     </div>
@@ -45,6 +51,7 @@ function DeckEditPage() {
   // mutations
   const [createCard, { isLoading: creatingCard }] = useCreateEmptyCardMutation();
   const [updateCard, { isLoading: updatingCard }] = useUpdateCardMutation();
+  const [deleteCard, { isLoading: deletingCard }] = useDeleteCardMutation();
 
   // typing handlers
   const onQuestionChange = (ev) => setQuestion(ev.target.value);
@@ -58,8 +65,19 @@ function DeckEditPage() {
     questionBoxRef.current.focus();
   };
 
+  const unsetCard = () => {
+    setCurrentCard('');
+    setQuestion('');
+    setAnswer('');
+  }
+
   // click handlers
   const onSaveCardClick = async () => {
+    if (!currentCard) {
+      console.log('popup -> please select a card');
+      return;
+    }
+
     try {
       const newCard = await updateCard({
         userToken,
@@ -83,9 +101,23 @@ function DeckEditPage() {
     }
   };
 
-  const onDeleteCardClick = async () => {
-    try {
+  const onMoveCardClick = () => {
+    if (!currentCard) {
+      console.log('popup -> please select a card');
+      return;
+    }
+  }
 
+  const onDeleteCardClick = async () => {
+    if (!currentCard) {
+      console.log('popup -> please select a card');
+      return;
+    }
+
+    try {
+      const deletedCard = await deleteCard({ userToken, cardId: currentCard }).unwrap();
+      unsetCard();
+      console.log(deletedCard);
     } catch (err) {
       console.log('popup -> ', err.data.message);
     }
@@ -93,17 +125,6 @@ function DeckEditPage() {
 
   // set name displayed in the ui
   const deckName = deckLoaded ? deck.name : 'loading...';
-
-  // set currentCard on first load
-  useEffect(() => {
-    if (cardsLoading) return;
-
-    if (cards[0]) {
-      changeCard(cards[0]);
-    } else {
-      onNewCardClick();
-    }
-  }, [cardsLoading]);
 
   // card list displayed
   const cardList = cardsLoaded ? cards.map((card) => {
@@ -168,13 +189,13 @@ function DeckEditPage() {
             <div className="text-lg font-extralight self-start">
               question
             </div>
-            <textarea onChange={onQuestionChange} ref={questionBoxRef} placeholder="[ this is a new card, write your question here ]" rows="9" className="bg-gray-50 focus:outline-none" value={question}/>
+            <textarea onChange={onQuestionChange} ref={questionBoxRef} placeholder={!!currentCard ? "[ this is a new card, write your question here ]" : "[ CURRENTLY NO CARD IS SELECTED ]"} rows="9" className="bg-gray-50 focus:outline-none" value={question}/>
           </div>
           <div className="w-3/4 h-64 mx-auto bg-gray-100 rounded drop-shadow-md mt-6 flex flex-col py-2 px-3">
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea onChange={onAnswerChange} placeholder="[ and your answer here ]" rows="9" className="bg-gray-50 focus:outline-none" value={answer}/>
+            <textarea onChange={onAnswerChange} placeholder={!!currentCard ? "[ and your answer here ]" : "[ please select a card or create a new one before saving or deleting ]"} rows="9" className="bg-gray-50 focus:outline-none" value={answer}/>
           </div>
           <div className="grid grid-rows-2 grid-cols-2 gap-3 pt-8 pb-12 lg:flex lg:justify-center">
             <div>
@@ -194,7 +215,7 @@ function DeckEditPage() {
               </button>
             </div>
             <div>
-              <button className="ml-auto flex items-center space-x-1 p-3 rounded drop-shadow bg-amber-500 font-medium hover:bg-amber-200 active:bg-amber-200">
+              <button onClick={onMoveCardClick} className="ml-auto flex items-center space-x-1 p-3 rounded drop-shadow bg-amber-500 font-medium hover:bg-amber-200 active:bg-amber-200">
                 <span className="text-xl">
                   <FaShareSquare />
                 </span>
@@ -202,7 +223,7 @@ function DeckEditPage() {
               </button>
             </div>
             <div>
-              <button className="flex items-center space-x-1 p-3 rounded drop-shadow bg-red-500 font-medium hover:bg-red-300 active:bg-red-300">
+              <button onClick={onDeleteCardClick} className="flex items-center space-x-1 p-3 rounded drop-shadow bg-red-500 font-medium hover:bg-red-300 active:bg-red-300">
                 <span className="text-xl">
                   <FaTrash />
                 </span>
