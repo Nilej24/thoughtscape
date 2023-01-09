@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -62,7 +62,6 @@ function DeckEditPage() {
     setCurrentCard(card._id);
     setQuestion(card.front);
     setAnswer(card.back);
-    questionBoxRef.current.focus();
   };
 
   const unsetCard = () => {
@@ -96,6 +95,7 @@ function DeckEditPage() {
     try {
       const newCard = await createCard({ userToken, deckId }).unwrap();
       changeCard(newCard);
+      questionBoxRef.current.focus();
     } catch (err) {
       console.log('popup -> ', err.data.message);
     }
@@ -195,7 +195,7 @@ function DeckEditPage() {
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea onChange={onAnswerChange} placeholder={!!currentCard ? "[ and your answer here ]" : "[ please select a card or create a new one before saving or deleting ]"} rows="9" className="bg-gray-50 focus:outline-none" value={answer}/>
+            <textarea onChange={onAnswerChange} placeholder={!!currentCard ? "[ and write your answer here. make sure to save your card when you're done... ]" : "[ please select a card or create a new one before saving or deleting ]"} rows="9" className="bg-gray-50 focus:outline-none" value={answer}/>
           </div>
           <div className="grid grid-rows-2 grid-cols-2 gap-3 pt-8 pb-12 lg:flex lg:justify-center">
             <div>
