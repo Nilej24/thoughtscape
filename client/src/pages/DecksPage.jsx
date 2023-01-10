@@ -6,7 +6,6 @@ import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
 import { useGetUserDecksQuery } from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
-import { setStudyDecks } from '../features/decks/decksSlice';
 
 // display for each deck
 function Deck({ deck, selected=false, changeSelection }) {
@@ -119,11 +118,11 @@ function DecksPage() {
   /* 'study selected decks' button click handler */
   const onStudyClick = () => {
 
-    /* get array of ids for the selected decks */
-    const studyDeckIds = decks.reduce((ids, deck, index) => {
-      if (deckSelections[index] == false) return ids;
-      return [...ids, deck._id];
-    }, []);
+    /* get string of ids (separated by ',') for the selected decks */
+    const studyDeckIds = decks.reduce((str, deck, index) => {
+      if (deckSelections[index] == false) return str;
+      return str + (str === '' ? '' : ',') + deck._id;
+    }, '');
 
     /* popup error thing if none are selected */
     if (studyDeckIds.length === 0) {
@@ -131,9 +130,8 @@ function DecksPage() {
       return;
     }
 
-    /* save array in global state and navigate to study page */
-    dispatch(setStudyDecks(studyDeckIds));
-    navigate('/study');
+    /* go to study page */
+    navigate('/study?decks=' + encodeURIComponent(studyDeckIds));
   };
 
   return (
