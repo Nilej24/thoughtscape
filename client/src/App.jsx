@@ -14,7 +14,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<DecksPage />} />
-        <Route path="/edit/:deckId" element={<DeckEditPage />} />
+        <Route path="/edit" element={<DeckEditPage />} />
         <Route path="/study" element={<StudyPage />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />

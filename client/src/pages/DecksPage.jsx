@@ -18,7 +18,7 @@ function Deck({ deck, selected=false, changeSelection }) {
 
   const onClick = (ev) => {
     // load the deck editor page
-    navigate(`/edit/${deck._id}`);
+    navigate(`/edit?deck=${deck._id}`);
   };
 
   return (

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
 import {
   useGetDeckQuery,
@@ -38,7 +38,9 @@ function DeckEditPage() {
   const questionBoxRef = useRef(null);
 
   // get deck id from url
-  const { deckId } = useParams();
+  const { search } = useLocation();
+  const deckId = new URLSearchParams(search).get('deck');
+
 
   // get user token for fetching data
   const userToken = useSelector(selectUserToken);
