@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
 import { useGetUserDecksQuery } from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
+import { setStudyDecks } from '../features/decks/decksSlice';
 
 // display for each deck
 function Deck({ deck, selected=false, changeSelection }) {
@@ -58,6 +59,7 @@ function DecksPage() {
   const { data: decks, isSuccess } = useGetUserDecksQuery({ token });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // send to sign in page if not logged in
   useEffect(() => {
@@ -112,14 +114,34 @@ function DecksPage() {
     } else {
       setAllSelectionsTo(true);
     }
-  }
+  };
+
+  /* 'study selected decks' button click handler */
+  const onStudyClick = () => {
+
+    /* get array of ids for the selected decks */
+    const studyDeckIds = decks.reduce((ids, deck, index) => {
+      if (deckSelections[index] == false) return ids;
+      return [...ids, deck._id];
+    }, []);
+
+    /* popup error thing if none are selected */
+    if (studyDeckIds.length === 0) {
+      console.log('popup -> please select some decks to study');
+      return;
+    }
+
+    /* save array in global state and navigate to study page */
+    dispatch(setStudyDecks(studyDeckIds));
+    navigate('/study');
+  };
 
   return (
     <section className="container mx-auto p-4 flex flex-col">
       <h1 onClick={() => console.log(deckSelections)} className="text-3xl font-semibold text-center py-3">
         Your Decks
       </h1>
-      <button className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-slate-400 self-center md:self-start hover:bg-slate-300">
+      <button onClick={onStudyClick} className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-slate-400 self-center md:self-start hover:bg-slate-300">
         <span className="text-3xl">
           <MdMenuBook />
         </span>

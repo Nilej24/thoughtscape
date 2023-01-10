@@ -45,7 +45,7 @@ function EndScreen({ score }) {
 }
 
 function StudyPage() {
-  let currentCardIsAnswered = true;
+  let currentCardIsAnswered = false;
   let cardsAnswered = 4;
   let score = 7;
 
@@ -57,7 +57,7 @@ function StudyPage() {
   }
 
   const cards = [
-    new Card(3),
+    new Card(1),
     new Card(2),
     new Card(3),
     new Card(3),
@@ -72,7 +72,7 @@ function StudyPage() {
 
 
   // creates progress bar thingy from the cards selected
-  const mapCardsToProgressBar = (card, index) => {
+  const progressBarItems = cards.map((card, index) => {
     let color;
     switch(card.confidence) {
       case 1:
@@ -89,14 +89,14 @@ function StudyPage() {
     }
 
     return (
-      <div
+      <li
         style={{
           backgroundColor: index <= cardsAnswered ? color : '#d4d4d4',
         }}
         className={`px-2 md:px-16 py-10 drop-shadow-md md:py-4 ${index === cardsAnswered ? 'border-2 border-black translate-y-1 md:translate-y-0 md:translate-x-2' : ''}`}
       />
     );
-  }
+  });
 
   // render end screen instead
   // when user has done 10 cards
@@ -106,9 +106,9 @@ function StudyPage() {
   return (
     <section className="container mx-auto px-6 py-10 md:py-40">
       <div className="xl:scale-125 flex flex-col md:flex-row justify-center items-center gap-10">
-        <div className="flex flex-row md:flex-col-reverse gap-3">
-          {cards.map(mapCardsToProgressBar)}
-        </div>
+        <ul className="flex flex-row md:flex-col-reverse gap-3">
+          {progressBarItems}
+        </ul>
         <div className="w-full max-w-xl">
           <div style={{borderBottomColor: confidenceColor}} className="bg-gray-100 rounded w-full border-x-8 border-x-gray-100 border-t-8 border-t-gray-100 border-b-8 border-b-black drop-shadow-lg">
             <div className="flex justify-between items-center pl-2 pr-1">
@@ -120,7 +120,7 @@ function StudyPage() {
               </button>
             </div>
             <p className="flex justify-center text-center text-xl font-medium h-64 py-3 px-10 mb-5 overflow-auto">
-              explain induced nuclear fission
+              Elit ratione id asperiores ex quisquam, dolore? Nisi deserunt neque ipsam nemo sunt itaque voluptates alias Sequi cupiditate sunt labore alias alias placeat Explicabo odio ab magni deserunt quibusdam? Assumenda illo rerum unde ut mollitia Odit fugit pariatur iure alias ipsum? Ea quibusdam illum quibusdam eveniet voluptatem necessitatibus similique Reprehenderit praesentium doloribus nobis soluta quos Optio esse non adipisci tenetur molestias? Unde temporibus dolorem labore minima quae. Veniam rem accusantium veritatis expedita quod atque Omnis natus cumque placeat ducimus libero.
             </p>
           </div>
           {currentCardIsAnswered ? (
