@@ -87,6 +87,39 @@ const getDeckCards = asyncHandler(async (req, res) => {
   res.json(cards);
 });
 
+// get all cards from all decks in the list
+// GET /api/decks/study/:ids
+// study page
+const getStudyCards = asyncHandler(async (req, res) => {
+  const cards = [];
+
+  // get array of deck ids
+  const deckIds = req.params.ids.split(',');
+
+  // loop to add each deck's cards to the array
+  deckIds.forEach(async (deckId) => {
+    const deck = await Deck.findById(deckId);
+
+    // check deck exists
+    if (!deck) {
+      res.status(400);
+      throw new Error('one of the decks does not exist');
+    }
+
+    // check user can study deck
+    if (!deck.canBeStudiedBy(req.user._id)) {
+      res.status(401);
+      throw new Error('user is not authorized to study one of the decks');
+    }
+
+    // add cards to array
+    const deckCards = await Card.find({ deck: req.params.id });
+    cards = [...cards, ...deckCards];
+  });
+
+  res.json(cards);
+});
+
 // create card in current deck
 // POST /api/decks/:id
 // deck page
@@ -231,6 +264,7 @@ module.exports = {
   getDeck,
   createDeck,
   getDeckCards,
+  getStudyCards,
   createCard,
   renameDeck,
   setUserPermission,
