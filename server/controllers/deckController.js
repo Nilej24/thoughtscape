@@ -91,7 +91,7 @@ const getDeckCards = asyncHandler(async (req, res) => {
 // GET /api/decks/study/:ids
 // study page
 const getStudyCards = asyncHandler(async (req, res) => {
-  const cards = [];
+  let cards = [];
 
   // get array of deck ids
   const deckIds = req.params.ids.split(',');
@@ -114,9 +114,9 @@ const getStudyCards = asyncHandler(async (req, res) => {
     }
 
     // add cards to array
-    const deckCards = await Card.find({ deck: req.params.id });
+    const deckCards = await Card.find({ deck: deckId });
     cards = [...cards, ...deckCards];
-  });
+  };
 
   res.json(cards);
 });

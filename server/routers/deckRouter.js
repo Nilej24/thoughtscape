@@ -33,5 +33,6 @@ router.route('/:id/permissions')
   .post(protect, setUserPermission);
 
 router.route('/study/:ids')
+  .get(protect, getStudyCards);
 
 module.exports = router;

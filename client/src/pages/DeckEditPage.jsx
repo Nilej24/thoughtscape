@@ -41,14 +41,13 @@ function DeckEditPage() {
   const { search } = useLocation();
   const deckId = new URLSearchParams(search).get('deck');
 
-
   // get user token for fetching data
   const userToken = useSelector(selectUserToken);
 
   // fetch deck so we can display its name
   const { data: deck, isSuccess: deckLoaded } = useGetDeckQuery({ userToken, deckId });
   // fetch cards
-  const { data: cards, isSuccess: cardsLoaded, isLoading: cardsLoading } = useGetDeckCardsQuery({ userToken, deckId });
+  const { data: cards, isSuccess: cardsLoaded } = useGetDeckCardsQuery({ userToken, deckId });
 
   // mutations
   const [createCard, { isLoading: creatingCard }] = useCreateEmptyCardMutation();

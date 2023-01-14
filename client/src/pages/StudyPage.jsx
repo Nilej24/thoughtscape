@@ -1,3 +1,7 @@
+import { useSelector } from 'react-redux';
+import { selectUserToken } from '../features/users/usersSlice';
+import { useLocation } from 'react-router-dom';
+import { useGetStudyCardsQuery } from '../features/api/apiSlice';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
 function EndScreen({ score }) {
@@ -44,7 +48,20 @@ function EndScreen({ score }) {
   );
 }
 
+// actual page component
 function StudyPage() {
+  // get user token for fetching data
+  const userToken = useSelector(selectUserToken);
+
+  // get selected deck ids from url
+  const { search } = useLocation();
+  const deckIds= decodeURIComponent(new URLSearchParams(search).get('decks'));
+
+  // get all cards in all selected decks
+  // (get from server using deck ids)
+  const { data: cardz, isSuccess: cardsLoaded } = useGetStudyCardsQuery({ userToken, deckIds });
+  console.log(cardz);
+
   let currentCardIsAnswered = false;
   let cardsAnswered = 4;
   let score = 7;
