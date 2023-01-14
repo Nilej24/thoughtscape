@@ -53,6 +53,17 @@ export const apiSlice = createApi({
       providesTags: ['Card'],
     }),
 
+    getStudyCards: builder.query({
+      query: ({ userToken, deckIds }) => ({
+        url: `/decks/study/${deckIds}`,
+        method: 'GET',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+      }),
+      providesTags: ['Card'],
+    }),
+
     createEmptyCard: builder.mutation({
       query: ({ userToken, deckId }) => ({
         url: `/decks/${deckId}`,
@@ -100,6 +111,7 @@ export const {
   useGetUserDecksQuery,
   useGetDeckQuery,
   useGetDeckCardsQuery,
+  useGetStudyCardsQuery,
   useCreateEmptyCardMutation,
   useUpdateCardMutation,
   useDeleteCardMutation,

@@ -97,7 +97,8 @@ const getStudyCards = asyncHandler(async (req, res) => {
   const deckIds = req.params.ids.split(',');
 
   // loop to add each deck's cards to the array
-  deckIds.forEach(async (deckId) => {
+  // for/of loop instead of forEach method because 'await' needs to work within the loop
+  for (const deckId of deckIds) {
     const deck = await Deck.findById(deckId);
 
     // check deck exists
