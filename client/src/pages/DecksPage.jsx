@@ -15,7 +15,7 @@ function Deck({ deck, selected=false, changeSelection }) {
 
   const navigate = useNavigate();
 
-  const onClick = (ev) => {
+  const onEditClick = () => {
     // load the deck editor page
     navigate(`/edit?deck=${deck._id}`);
   };
@@ -28,7 +28,7 @@ function Deck({ deck, selected=false, changeSelection }) {
         <span>{deck.name}</span>
         <div className="hidden group-hover:flex space-x-4 absolute right-8">
           { (deck.owner === user._id || deck.editors.includes(user._id)) && // shows for editors and owners
-            <button onClick={onClick} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
+            <button onClick={onEditClick} className="rounded p-3 text-lg drop-shadow bg-sky-500 hover:bg-sky-300">
               <FaEdit />
             </button>
           }

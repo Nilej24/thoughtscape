@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserToken } from '../features/users/usersSlice';
 import { useLocation } from 'react-router-dom';
 import { useGetStudyCardsQuery } from '../features/api/apiSlice';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
+// screen for when user has completed 10 cards
 function EndScreen({ score }) {
   return (
     <div className="container mx-auto py-20 md:py-44">
@@ -50,6 +52,11 @@ function EndScreen({ score }) {
 
 // actual page component
 function StudyPage() {
+  const [currentCard, setCurrentCard] = useState(null);
+  const [cardsAnswered, setCardsAnswered] = useState(4);
+  const [currentCardIsAnswered, setCurrentCardIsAnswered] = useState(false);
+  const [score, setScore] = useState(7);
+
   // get user token for fetching data
   const userToken = useSelector(selectUserToken);
 
@@ -62,9 +69,8 @@ function StudyPage() {
   const { data: cardz, isSuccess: cardsLoaded } = useGetStudyCardsQuery({ userToken, deckIds });
   console.log(cardz);
 
-  let currentCardIsAnswered = false;
-  let cardsAnswered = 4;
-  let score = 7;
+  // ################################################################################
+  // below is the old stuff that i need to replace ###############################
 
   const confidenceColor = '#ef4444';
 
