@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { selectUserToken } from '../features/users/usersSlice';
+import { selectUserToken, selectUser } from '../features/users/usersSlice';
 import { useLocation } from 'react-router-dom';
 import { useGetStudyCardsQuery } from '../features/api/apiSlice';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
@@ -50,6 +50,35 @@ function EndScreen({ score }) {
   );
 }
 
+// function for selecting the next card
+// returns the selected card
+const getNextCard = (cards, currentCard) => {
+  // return any unrated card
+  for (const card of cards) {
+    if (
+      !card.hard.includes(user._id) &&
+      !card.medium.includes(user._id) &&
+      !card.easy.includes(user._id)
+    ) {
+      return card;
+    }
+  }
+
+  // select a random card
+  // return if it's not the same as the current card
+  const randCard = cards[Math.floor(Math.random() * cards.length)];
+  if (randCard._id !== currentCard?._id) return randCard;
+
+  // for if current card is selected
+  // return 'highest priority' card instead
+  const orderedCards = [
+    ...cards.filter(card => card.hard.includes(user._id)),
+    ...cards.filter(card => card.medium.includes(user._id)),
+    ...cards.filter(card => card.easy.includes(user._id)),
+  ];
+  return (orderedCards[0]._id !== currentCard?._id) ?  orderedCards[0] : orderedCards[1];
+}
+
 // actual page component
 function StudyPage() {
   const [currentCard, setCurrentCard] = useState(null);
@@ -58,7 +87,8 @@ function StudyPage() {
   const [score, setScore] = useState(7);
 
   // get user token for fetching data
-  const userToken = useSelector(selectUserToken);
+  const user = useSelector(selectUser);
+  const userToken = user?.token;
 
   // get selected deck ids from url
   const { search } = useLocation();
