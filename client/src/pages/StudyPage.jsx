@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { selectUserToken, selectUser } from '../features/users/usersSlice';
+import { selectUser } from '../features/users/usersSlice';
 import { useLocation } from 'react-router-dom';
 import { useGetStudyCardsQuery } from '../features/api/apiSlice';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
@@ -97,7 +97,20 @@ function StudyPage() {
   // get all cards in all selected decks
   // (get from server using deck ids)
   const { data: cardz, isSuccess: cardsLoaded } = useGetStudyCardsQuery({ userToken, deckIds });
-  console.log(cardz);
+
+  // function for switching between sides of the card
+  // with related stuff for doing the same on space press
+  const flipCard = () => {
+    setCurrentCardIsAnswered(!currentCardIsAnswered);
+  };
+  const onSpacePress = (ev) => {
+    if (ev.key !== ' ') return;
+    flipCard();
+  }
+  useEffect(() => {
+    window.addEventListener('keydown', onSpacePress);
+    return () => window.removeEventListener('keydown', onSpacePress);
+  }, [onSpacePress]);
 
   // ################################################################################
   // below is the old stuff that i need to replace ###############################
@@ -157,7 +170,7 @@ function StudyPage() {
 
   // render page
   return (
-    <section className="container mx-auto px-6 py-10 md:py-40">
+    <section onKeyDown={onSpacePress} className="container mx-auto px-6 py-10 md:py-40">
       <div className="xl:scale-125 flex flex-col md:flex-row justify-center items-center gap-10">
         <ul className="flex flex-row md:flex-col-reverse gap-3">
           {progressBarItems}
@@ -198,7 +211,7 @@ function StudyPage() {
               </div>
             </div>
           ) : (
-            <button style={{backgroundColor: confidenceColor}} className="rounded bg-slate-400 hover:bg-slate-300 w-full p-5 mt-5 font-semibold drop-shadow-lg">
+            <button onClick={flipCard} style={{backgroundColor: confidenceColor}} className="rounded bg-slate-400 hover:bg-slate-300 w-full p-5 mt-5 font-semibold drop-shadow-lg">
               show answer
             </button>
           )}
