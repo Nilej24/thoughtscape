@@ -50,9 +50,9 @@ function EndScreen({ score }) {
   );
 }
 
-// function for selecting the next card
+// 'pure' function for selecting the next card
 // returns the selected card
-const getNextCard = (cards, currentCard) => {
+const getNextCard = (cards, currentCard, user) => {
   // return any unrated card
   for (const card of cards) {
     if (
@@ -111,6 +111,14 @@ function StudyPage() {
     window.addEventListener('keydown', onSpacePress);
     return () => window.removeEventListener('keydown', onSpacePress);
   }, [onSpacePress]);
+
+  // set initial card
+  useEffect(() => {
+    if (cardz) setCurrentCard(getNextCard(cardz, currentCard, user));
+  }, [cardz]);
+
+  // make the text shown on the card
+  const cardText = currentCard ? (currentCardIsAnswered ? currentCard.back : currentCard.front) : 'loading card...'
 
   // ################################################################################
   // below is the old stuff that i need to replace ###############################
@@ -186,7 +194,7 @@ function StudyPage() {
               </button>
             </div>
             <p className="flex justify-center text-center text-xl font-medium h-64 py-3 px-10 mb-5 overflow-auto">
-              Elit ratione id asperiores ex quisquam, dolore? Nisi deserunt neque ipsam nemo sunt itaque voluptates alias Sequi cupiditate sunt labore alias alias placeat Explicabo odio ab magni deserunt quibusdam? Assumenda illo rerum unde ut mollitia Odit fugit pariatur iure alias ipsum? Ea quibusdam illum quibusdam eveniet voluptatem necessitatibus similique Reprehenderit praesentium doloribus nobis soluta quos Optio esse non adipisci tenetur molestias? Unde temporibus dolorem labore minima quae. Veniam rem accusantium veritatis expedita quod atque Omnis natus cumque placeat ducimus libero.
+              {cardText}
             </p>
           </div>
           {currentCardIsAnswered ? (

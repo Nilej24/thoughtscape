@@ -100,7 +100,7 @@ function DecksPage() {
   const listContent = isSuccess ? (
     decks.map((deck, index) => <Deck key={deck._id} deck={deck} selected={deckSelections[index]} changeSelection={createChangeSelection(index)} />)
   ) : (
-    'loading xdddddddddd'
+    'loading decks...'
   )
   
   // to see if all decks are selected
