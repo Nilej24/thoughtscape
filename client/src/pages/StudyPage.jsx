@@ -120,10 +120,12 @@ function StudyPage() {
   // make the text shown on the card
   const cardText = currentCard ? (currentCardIsAnswered ? currentCard.back : currentCard.front) : 'loading card...'
 
+  // get rating as a number
+  // for changing color shown on the card in ui
+  const currentRating = currentCard?.easy.includes(user._id) ? 1 : currentCard?.medium.includes(user._id) ? 2 : currentCard?.hard.includes(user._id) ? 3 : 0;
+
   // ################################################################################
   // below is the old stuff that i need to replace ###############################
-
-  const confidenceColor = '#ef4444';
 
   // get cards from api
   function Card(confidence) {
@@ -184,7 +186,7 @@ function StudyPage() {
           {progressBarItems}
         </ul>
         <div className="w-full max-w-xl">
-          <div style={{borderBottomColor: confidenceColor}} className="bg-gray-100 rounded w-full border-x-8 border-x-gray-100 border-t-8 border-t-gray-100 border-b-8 border-b-black drop-shadow-lg">
+          <div className={`bg-gray-100 rounded w-full border-x-8 border-x-gray-100 border-t-8 border-t-gray-100 border-b-8 drop-shadow-lg ${(currentRating === 1) ? 'border-b-green-500' : (currentRating === 2) ? 'border-b-amber-500' : (currentRating === 3) ? 'border-b-red-500' : 'border-b-gray-400'}`}>
             <div className="flex justify-between items-center pl-2 pr-1">
               <span className="text-4xl">
                 {currentCardIsAnswered ? "A" : "Q"}
@@ -219,7 +221,7 @@ function StudyPage() {
               </div>
             </div>
           ) : (
-            <button onClick={flipCard} style={{backgroundColor: confidenceColor}} className="rounded bg-slate-400 hover:bg-slate-300 w-full p-5 mt-5 font-semibold drop-shadow-lg">
+            <button onClick={flipCard} className={`rounded w-full p-5 mt-5 font-semibold drop-shadow-lg ${(currentRating === 1) ? 'bg-green-500 hover:bg-green-300' : (currentRating === 2) ? 'bg-amber-500 hover:bg-amber-200' : (currentRating === 3) ? 'bg-red-500 hover:bg-red-300' : 'bg-gray-400 hover:bg-gray-300'}`}>
               show answer
             </button>
           )}
