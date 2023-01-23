@@ -84,7 +84,6 @@ function DeckEditPage() {
         cardId: currentCard,
         front: question,
         back: answer,
-        newDeckId: deckId,
       }).unwrap();
       console.log(newCard);
     } catch (err) {

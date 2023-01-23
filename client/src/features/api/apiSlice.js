@@ -80,13 +80,37 @@ export const apiSlice = createApi({
     }),
 
     updateCard: builder.mutation({
-      query: ({ userToken, cardId, front, back, newDeckId }) => ({
+      query: ({ userToken, cardId, front, back }) => ({
         url: `/cards/${cardId}`,
         method: 'PUT',
         headers: {
           authorization: `Bearer ${userToken}`,
         },
-        body: { front, back, newDeckId },
+        body: { front, back },
+      }),
+      invalidatesTags: ['Card'],
+    }),
+
+    updateCardDeck: builder.mutation({
+      query: ({ userToken, cardId, newDeckId }) => ({
+        url: `/cards/${cardId}`,
+        method: 'PUT',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+        body: { newDeckId },
+      }),
+      invalidatesTags: ['Card'],
+    }),
+
+    updateCardRating: builder.mutation({
+      query: ({ userToken, cardId, newRating }) => ({
+        url: `/cards/${cardId}/rating`,
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+        body: { newRating },
       }),
       invalidatesTags: ['Card'],
     }),
@@ -114,5 +138,7 @@ export const {
   useGetStudyCardsQuery,
   useCreateEmptyCardMutation,
   useUpdateCardMutation,
+  useUpdateCardDeckMutation,
+  useUpdateCardRatingMutation,
   useDeleteCardMutation,
 } = apiSlice;

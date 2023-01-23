@@ -145,6 +145,9 @@ const createCard = asyncHandler(async (req, res) => {
     front,
     back,
     deck: req.params.id,
+    easy: [],
+    medium: [],
+    hard: [],
   });
 
   await card.save();

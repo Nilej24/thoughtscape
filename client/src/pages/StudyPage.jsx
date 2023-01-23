@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../features/users/usersSlice';
 import { useLocation } from 'react-router-dom';
-import { useGetStudyCardsQuery } from '../features/api/apiSlice';
+import { useGetStudyCardsQuery, useUpdateCardRatingMutation } from '../features/api/apiSlice';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
 // screen for when user has completed 10 cards
@@ -82,9 +82,9 @@ const getNextCard = (cards, currentCard, user) => {
 // actual page component
 function StudyPage() {
   const [currentCard, setCurrentCard] = useState(null);
-  const [cardsAnswered, setCardsAnswered] = useState(4);
+  const [cardsAnswered, setCardsAnswered] = useState(0);
   const [currentCardIsAnswered, setCurrentCardIsAnswered] = useState(false);
-  const [score, setScore] = useState(7);
+  const [score, setScore] = useState(0);
 
   // get user token for fetching data
   const user = useSelector(selectUser);
@@ -96,12 +96,16 @@ function StudyPage() {
 
   // get all cards in all selected decks
   // (get from server using deck ids)
-  const { data: cardz, isSuccess: cardsLoaded } = useGetStudyCardsQuery({ userToken, deckIds });
+  const { data: cardz, isFetching: cardsFetching } = useGetStudyCardsQuery({ userToken, deckIds });
+
+  // for updating a card's rating
+  const [updateCardRating, { isLoading: updatingRating }] = useUpdateCardRatingMutation();
 
   // function for switching between sides of the card
   // with related stuff for doing the same on space press
   const flipCard = () => {
-    setCurrentCardIsAnswered(!currentCardIsAnswered);
+    if (currentCard && !updatingRating && !cardsFetching)
+      setCurrentCardIsAnswered(!currentCardIsAnswered);
   };
   const onSpacePress = (ev) => {
     if (ev.key !== ' ') return;
@@ -113,16 +117,32 @@ function StudyPage() {
   }, [onSpacePress]);
 
   // set initial card
+  // also get next card each time a card is completed
+  // this works because setting a card's rating (completing the card) causes all cards to refetch
   useEffect(() => {
     if (cardz) setCurrentCard(getNextCard(cardz, currentCard, user));
   }, [cardz]);
 
   // make the text shown on the card
-  const cardText = currentCard ? (currentCardIsAnswered ? currentCard.back : currentCard.front) : 'loading card...'
+  const cardText = currentCard && !updatingRating && !cardsFetching ? (currentCardIsAnswered ? currentCard.back : currentCard.front) : 'loading card...'
 
   // get rating as a number
   // for changing color shown on the card in ui
-  const currentRating = currentCard?.easy.includes(user._id) ? 1 : currentCard?.medium.includes(user._id) ? 2 : currentCard?.hard.includes(user._id) ? 3 : 0;
+  const currentRating = currentCard?.easy.includes(user._id) ? 3 : currentCard?.medium.includes(user._id) ? 2 : currentCard?.hard.includes(user._id) ? 1 : 0;
+
+  // function called in each rating button's onClick
+  const funcForRatingClick = async (newRating) => {
+    if (updatingRating) return;
+    try {
+      const updatedCard = await updateCardRating({ userToken, cardId: currentCard._id, newRating }).unwrap();
+      console.log(updatedCard);
+      setCurrentCardIsAnswered(false);
+      setCardsAnswered(cardsAnswered + 1);
+      setScore(score + 0.5 * (newRating - 1));
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
 
   // ################################################################################
   // below is the old stuff that i need to replace ###############################
@@ -186,7 +206,7 @@ function StudyPage() {
           {progressBarItems}
         </ul>
         <div className="w-full max-w-xl">
-          <div className={`bg-gray-100 rounded w-full border-x-8 border-x-gray-100 border-t-8 border-t-gray-100 border-b-8 drop-shadow-lg ${(currentRating === 1) ? 'border-b-green-500' : (currentRating === 2) ? 'border-b-amber-500' : (currentRating === 3) ? 'border-b-red-500' : 'border-b-gray-400'}`}>
+          <div className={`bg-gray-100 rounded w-full border-x-8 border-x-gray-100 border-t-8 border-t-gray-100 border-b-8 drop-shadow-lg ${(currentRating === 3) ? 'border-b-green-500' : (currentRating === 2) ? 'border-b-amber-500' : (currentRating === 1) ? 'border-b-red-500' : 'border-b-gray-400'}`}>
             <div className="flex justify-between items-center pl-2 pr-1">
               <span className="text-4xl">
                 {currentCardIsAnswered ? "A" : "Q"}
@@ -205,23 +225,23 @@ function StudyPage() {
                 did you get it right?
               </p>
               <div>
-                <button className="w-full rounded p-5 font-semibold drop-shadow-lg bg-red-500 hover:bg-red-300">
+                <button onClick={() => funcForRatingClick(1)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-red-500 hover:bg-red-300">
                   no
                 </button>
               </div>
               <div>
-                <button className="w-full rounded p-5 font-semibold drop-shadow-lg bg-amber-500 hover:bg-amber-200">
+                <button onClick={() => funcForRatingClick(2)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-amber-500 hover:bg-amber-200">
                   kinda
                 </button>
               </div>
               <div>
-                <button className="w-full rounded p-5 font-semibold drop-shadow-lg bg-green-500 hover:bg-green-300">
+                <button onClick={() => funcForRatingClick(3)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-green-500 hover:bg-green-300">
                   yes
                 </button>
               </div>
             </div>
           ) : (
-            <button onClick={flipCard} className={`rounded w-full p-5 mt-5 font-semibold drop-shadow-lg ${(currentRating === 1) ? 'bg-green-500 hover:bg-green-300' : (currentRating === 2) ? 'bg-amber-500 hover:bg-amber-200' : (currentRating === 3) ? 'bg-red-500 hover:bg-red-300' : 'bg-gray-400 hover:bg-gray-300'}`}>
+            <button onClick={flipCard} className={`rounded w-full p-5 mt-5 font-semibold drop-shadow-lg ${(currentRating === 3) ? 'bg-green-500 hover:bg-green-300' : (currentRating === 2) ? 'bg-amber-500 hover:bg-amber-200' : (currentRating === 1) ? 'bg-red-500 hover:bg-red-300' : 'bg-gray-400 hover:bg-gray-300'}`}>
               show answer
             </button>
           )}
