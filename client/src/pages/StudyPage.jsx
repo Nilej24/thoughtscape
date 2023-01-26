@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../features/users/usersSlice';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useGetStudyCardsQuery, useUpdateCardRatingMutation } from '../features/api/apiSlice';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
 // screen for when user has completed 10 cards
-function EndScreen({ score }) {
+function EndScreen({ score, resetStudy }) {
+  const navigate = useNavigate();
+
   return (
     <div className="container mx-auto py-20 md:py-44">
       <div className="flex flex-col items-center gap-10 xl:scale-125">
@@ -28,7 +30,7 @@ function EndScreen({ score }) {
           </p>
         </div>
         <div className="flex gap-5 sm:gap-10">
-          <button className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-slate-400 hover:bg-slate-300">
+          <button onClick={() => navigate('/')} className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-slate-400 hover:bg-slate-300">
             <span className="text-2xl">
               <FaArrowCircleLeft />
             </span>
@@ -36,7 +38,7 @@ function EndScreen({ score }) {
               go back
             </span>
           </button>
-          <button className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-slate-400 hover:bg-slate-300">
+          <button onClick={resetStudy} className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-slate-400 hover:bg-slate-300">
             <span className="text-2xl">
               <FaArrowCircleRight />
             </span>
@@ -156,59 +158,17 @@ function StudyPage() {
     );
   }
 
-  // ################################################################################
-  // below is the old stuff that i need to replace ###############################
-
-  // get cards from api
-  function Card(confidence) {
-    this.confidence = confidence;
-  }
-
-  const cards = [
-    new Card(1),
-    new Card(2),
-    new Card(3),
-    new Card(3),
-    new Card(1),
-    new Card(1),
-    new Card(1),
-    new Card(2),
-    new Card(1),
-    new Card(3),
-  ];
-  // will replace this later ^^^^^
-
-
-  // creates progress bar thingy from the cards selected
-//  const progressBarItems = cards.map((card, index) => {
-//    let color;
-//    switch(card.confidence) {
-//      case 1:
-//        color = '#ef4444';
-//        break;
-//      case 2:
-//        color = '#f59e0b';
-//        break;
-//      case 3:
-//        color = '#22c55e';
-//        break;
-//      default:
-//        color = '#d4d4d4';
-//    }
-//
-//    return (
-//      <li
-//        style={{
-//          backgroundColor: index <= cardsAnswered ? color : '#d4d4d4',
-//        }}
-//        className={`px-2 md:px-16 py-10 drop-shadow-md md:py-4 ${index === cardsAnswered ? 'border-2 border-black translate-y-1 md:translate-y-0 md:translate-x-2' : ''}`}
-//      />
-//    );
-//  });
+  // function for resetting from the end screen
+  const resetStudy = () => {
+    setCardsAnswered(0);
+    setCurrentCardIsAnswered(false);
+    setScore(0);
+    setSessionRatings([]);
+  };
 
   // render end screen instead
   // when user has done 10 cards
-  if (cardsAnswered >= 10) return <EndScreen score={score} />
+  if (cardsAnswered >= 10) return <EndScreen score={score} resetStudy={resetStudy} />
 
   // render page
   return (
