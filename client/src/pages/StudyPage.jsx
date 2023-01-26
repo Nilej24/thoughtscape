@@ -85,6 +85,7 @@ function StudyPage() {
   const [cardsAnswered, setCardsAnswered] = useState(0);
   const [currentCardIsAnswered, setCurrentCardIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [sessionRatings, setSessionRatings] = useState([]);
 
   // get user token for fetching data
   const user = useSelector(selectUser);
@@ -92,7 +93,7 @@ function StudyPage() {
 
   // get selected deck ids from url
   const { search } = useLocation();
-  const deckIds= decodeURIComponent(new URLSearchParams(search).get('decks'));
+  const deckIds = decodeURIComponent(new URLSearchParams(search).get('decks'));
 
   // get all cards in all selected decks
   // (get from server using deck ids)
@@ -139,10 +140,21 @@ function StudyPage() {
       setCurrentCardIsAnswered(false);
       setCardsAnswered(cardsAnswered + 1);
       setScore(score + 0.5 * (newRating - 1));
+      setSessionRatings([...sessionRatings, newRating]);
     } catch (err) {
       console.log('popup -> ', err.data.message);
     }
   };
+
+  // create progress bar for ui
+  const progressBarItems = [];
+  for (let i = 0; i < 10; i++) {
+    const progressBarRating = sessionRatings[i] || 0;
+
+    progressBarItems[i] = (
+      <li className={`px-2 md:px-16 py-10 drop-shadow-md md:py-4 ${i >= cardsAnswered ? 'bg-neutral-300 ' : progressBarRating === 3 ? 'bg-green-500' : progressBarRating === 2 ? 'bg-amber-500' : progressBarRating === 1 ? 'bg-red-500' : ''} ${i === cardsAnswered ? 'border-2 border-black translate-y-1 md:translate-y-0 md:translate-x-2' : ''}`} />
+    );
+  }
 
   // ################################################################################
   // below is the old stuff that i need to replace ###############################
@@ -168,31 +180,31 @@ function StudyPage() {
 
 
   // creates progress bar thingy from the cards selected
-  const progressBarItems = cards.map((card, index) => {
-    let color;
-    switch(card.confidence) {
-      case 1:
-        color = '#ef4444';
-        break;
-      case 2:
-        color = '#f59e0b';
-        break;
-      case 3:
-        color = '#22c55e';
-        break;
-      default:
-        color = '#d4d4d4';
-    }
-
-    return (
-      <li
-        style={{
-          backgroundColor: index <= cardsAnswered ? color : '#d4d4d4',
-        }}
-        className={`px-2 md:px-16 py-10 drop-shadow-md md:py-4 ${index === cardsAnswered ? 'border-2 border-black translate-y-1 md:translate-y-0 md:translate-x-2' : ''}`}
-      />
-    );
-  });
+//  const progressBarItems = cards.map((card, index) => {
+//    let color;
+//    switch(card.confidence) {
+//      case 1:
+//        color = '#ef4444';
+//        break;
+//      case 2:
+//        color = '#f59e0b';
+//        break;
+//      case 3:
+//        color = '#22c55e';
+//        break;
+//      default:
+//        color = '#d4d4d4';
+//    }
+//
+//    return (
+//      <li
+//        style={{
+//          backgroundColor: index <= cardsAnswered ? color : '#d4d4d4',
+//        }}
+//        className={`px-2 md:px-16 py-10 drop-shadow-md md:py-4 ${index === cardsAnswered ? 'border-2 border-black translate-y-1 md:translate-y-0 md:translate-x-2' : ''}`}
+//      />
+//    );
+//  });
 
   // render end screen instead
   // when user has done 10 cards
