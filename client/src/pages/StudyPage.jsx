@@ -134,11 +134,11 @@ function StudyPage() {
   const currentRating = currentCard?.easy.includes(user._id) ? 3 : currentCard?.medium.includes(user._id) ? 2 : currentCard?.hard.includes(user._id) ? 1 : 0;
 
   // function called in each rating button's onClick
+  // with related stuff for doing it when 1, 2, or 3 are pressed on keyboard
   const funcForRatingClick = async (newRating) => {
     if (updatingRating) return;
     try {
       const updatedCard = await updateCardRating({ userToken, cardId: currentCard._id, newRating }).unwrap();
-      console.log(updatedCard);
       setCurrentCardIsAnswered(false);
       setCardsAnswered(cardsAnswered + 1);
       setScore(score + 0.5 * (newRating - 1));
@@ -147,6 +147,15 @@ function StudyPage() {
       console.log('popup -> ', err.data.message);
     }
   };
+  const onNumPress = (ev) => {
+    if ((ev.key === '1' || ev.key === '2' || ev.key === '3') && currentCardIsAnswered) {
+      funcForRatingClick(Number(ev.key));
+    }
+  };
+  useEffect(() => {
+    window.addEventListener('keydown', onNumPress);
+    return () => window.removeEventListener('keydown', onNumPress);
+  }, [onNumPress]);
 
   // create progress bar for ui
   const progressBarItems = [];
