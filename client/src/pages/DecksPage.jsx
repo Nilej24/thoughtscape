@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
@@ -6,6 +6,7 @@ import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
 import { useGetUserDecksQuery } from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
+import Modal from '../components/Modal';
 
 // display for each deck
 function Deck({ deck, selected=false, changeSelection }) {
@@ -51,6 +52,7 @@ function Deck({ deck, selected=false, changeSelection }) {
 // the whole page
 function DecksPage() {
 
+  const [creatingNewDeck, setCreatingNewDeck] = useState(true);
   const [deckSelections, setDeckSelections] = useState([]);
   const token = useSelector(selectUserToken);
 
@@ -65,6 +67,13 @@ function DecksPage() {
     if(!token)
       navigate('/signin');
   }, []);
+
+  // for focusing the text box when creating a new deck
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (creatingNewDeck)
+      inputRef.current.focus();
+  }, [creatingNewDeck, inputRef]);
 
   // set all values in deckSelections array
   const setAllSelectionsTo = (val) => {
@@ -134,30 +143,55 @@ function DecksPage() {
     navigate('/study?decks=' + encodeURIComponent(studyDeckIds));
   };
 
+  const onCreateSubmit = (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('created deck');
+      setCreatingNewDeck(false);
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
   return (
-    <section className="container mx-auto p-4 flex flex-col">
-      <h1 onClick={() => console.log(deckSelections)} className="text-3xl font-semibold text-center py-3">
-        Your Decks
-      </h1>
-      <button onClick={onStudyClick} className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-slate-400 self-center md:self-start hover:bg-slate-300">
-        <span className="text-3xl">
-          <MdMenuBook />
-        </span>
-        <span>study selected decks</span>
-      </button>
-      <ul>
-        <li>
-          <label className="flex items-center space-x-5 p-8 cursor-pointer hover:bg-gray-100">
-            <input type="checkbox" checked={allSelected} onChange={onAllDecksClick} className="w-6 h-6" />
-            <span>all decks</span>
-          </label>
-       </li>
-        {listContent}
-      </ul>
-      <button className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-slate-400 self-center md:self-start md:ml-16 hover:bg-slate-300">
-        +
-      </button>
-    </section>
+    <>
+      <section className="container mx-auto p-4 flex flex-col">
+        <h1 onClick={() => console.log(deckSelections)} className="text-3xl font-semibold text-center py-3">
+          Your Decks
+        </h1>
+        <button onClick={onStudyClick} className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-slate-400 self-center md:self-start hover:bg-slate-300">
+          <span className="text-3xl">
+            <MdMenuBook />
+          </span>
+          <span>study selected decks</span>
+        </button>
+        <ul>
+          <li>
+            <label className="flex items-center space-x-5 p-8 cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" checked={allSelected} onChange={onAllDecksClick} className="w-6 h-6" />
+              <span>all decks</span>
+            </label>
+         </li>
+          {listContent}
+        </ul>
+        <button onClick={() => setCreatingNewDeck(true)} className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-slate-400 self-center md:self-start md:ml-16 hover:bg-slate-300">
+          +
+        </button>
+      </section>
+      {creatingNewDeck &&
+        <Modal modalIsOpen={creatingNewDeck} closeModal={() => setCreatingNewDeck(false)}>
+          <div className="flex flex-col items-center gap-y-5">
+            <h2 className="text-3xl font-semibold text-center">Create New Deck</h2>
+            <form onSubmit={onCreateSubmit} className="w-full flex flex-col gap-y-5 items-center">
+              <input ref={inputRef} type="text" placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
+              <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+                continue
+              </button>
+            </form>
+          </div>
+        </Modal>
+      }
+    </>
   );
 }
 

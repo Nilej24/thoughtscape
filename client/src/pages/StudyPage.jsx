@@ -163,7 +163,7 @@ function StudyPage() {
     const progressBarRating = sessionRatings[i] || 0;
 
     progressBarItems[i] = (
-      <li className={`px-2 md:px-16 py-10 drop-shadow-md md:py-4 ${i >= cardsAnswered ? 'bg-neutral-300 ' : progressBarRating === 3 ? 'bg-green-500' : progressBarRating === 2 ? 'bg-amber-500' : progressBarRating === 1 ? 'bg-red-500' : ''} ${i === cardsAnswered ? 'border-2 border-black translate-y-1 md:translate-y-0 md:translate-x-2' : ''}`} />
+      <li key={i} className={`px-2 md:px-16 py-10 drop-shadow-md md:py-4 ${i >= cardsAnswered ? 'bg-neutral-300 ' : progressBarRating === 3 ? 'bg-green-500' : progressBarRating === 2 ? 'bg-amber-500' : progressBarRating === 1 ? 'bg-red-500' : ''} ${i === cardsAnswered ? 'border-2 border-black translate-y-1 md:translate-y-0 md:translate-x-2' : ''}`} />
     );
   }
 
