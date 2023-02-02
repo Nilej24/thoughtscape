@@ -9,7 +9,7 @@ import { selectUser, selectUserToken } from '../features/users/usersSlice';
 import Modal from '../components/Modal';
 
 // display for each deck
-function Deck({ deck, selected=false, changeSelection }) {
+function Deck({ deck, selected=false, changeSelection, onUserPermsClick, onDeleteClick }) {
 
   // for displaying buttons based on user permissions
   const user = useSelector(selectUser);
@@ -35,10 +35,10 @@ function Deck({ deck, selected=false, changeSelection }) {
           }
           { deck.owner === user._id && // shows only for owners
             <>
-              <button className="rounded p-3 text-lg drop-shadow bg-purple-500 hover:bg-purple-300">
+              <button onClick={onUserPermsClick} className="rounded p-3 text-lg drop-shadow bg-purple-500 hover:bg-purple-300">
                 <FaUserEdit />
               </button>
-              <button className="rounded p-3 text-lg drop-shadow bg-red-500 hover:bg-red-300">
+              <button onClick={onDeleteClick} className="rounded p-3 text-lg drop-shadow bg-red-500 hover:bg-red-300">
                 <FaTrash />
               </button>
             </>
@@ -52,7 +52,10 @@ function Deck({ deck, selected=false, changeSelection }) {
 // the whole page
 function DecksPage() {
 
-  const [creatingNewDeck, setCreatingNewDeck] = useState(true);
+  const [creatingNewDeck, setCreatingNewDeck] = useState(false);
+  const [modalDeck, setModalDeck] = useState(null);
+  const [changingDeckPermissions, setChangingDeckPermissions] = useState(false);
+  const [deletingDeck, setDeletingDeck] = useState(false);
   const [deckSelections, setDeckSelections] = useState([]);
   const token = useSelector(selectUserToken);
 
@@ -107,10 +110,25 @@ function DecksPage() {
 
   // create the list of decks using the deck component
   const listContent = isSuccess ? (
-    decks.map((deck, index) => <Deck key={deck._id} deck={deck} selected={deckSelections[index]} changeSelection={createChangeSelection(index)} />)
+    decks.map((deck, index) => {
+
+      const onUserPermsClick = () => {
+        setModalDeck(deck);
+        setChangingDeckPermissions(true);
+      };
+
+      const onDeleteClick = () => {
+        setModalDeck(deck);
+        setDeletingDeck(true);
+      };
+
+      return (
+        <Deck key={deck._id} deck={deck} selected={deckSelections[index]} changeSelection={createChangeSelection(index)} onUserPermsClick={onUserPermsClick} onDeleteClick={onDeleteClick} />
+      );
+    })
   ) : (
     'loading decks...'
-  )
+  );
   
   // to see if all decks are selected
   const allSelected = deckSelections.every(deck => deck === true);
@@ -143,7 +161,7 @@ function DecksPage() {
     navigate('/study?decks=' + encodeURIComponent(studyDeckIds));
   };
 
-  const onCreateSubmit = (ev) => {
+  const onCreateSubmit = async (ev) => {
     try {
       ev.preventDefault();
       console.log('created deck');
@@ -151,6 +169,19 @@ function DecksPage() {
     } catch (err) {
       console.log('popup -> ', err.data.message);
     }
+  };
+
+  const onChangePermsSubmit = async (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('changed deck permissions');
+      setChangingDeckPermissions(false);
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+  
+  const onDeleteSubmit = async () => {
   };
 
   return (
@@ -179,16 +210,41 @@ function DecksPage() {
         </button>
       </section>
       {creatingNewDeck &&
-        <Modal modalIsOpen={creatingNewDeck} closeModal={() => setCreatingNewDeck(false)}>
+        <Modal closeModal={() => setCreatingNewDeck(false)}>
           <div className="flex flex-col items-center gap-y-5">
             <h2 className="text-3xl font-semibold text-center">Create New Deck</h2>
             <form onSubmit={onCreateSubmit} className="w-full flex flex-col gap-y-5 items-center">
-              <input ref={inputRef} type="text" placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
+              <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
               <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
                 continue
               </button>
             </form>
           </div>
+        </Modal>
+      }
+      {changingDeckPermissions &&
+        <Modal closeModal={() => setChangingDeckPermissions(false)}>
+          <div className="flex flex-col items-center gap-y-5">
+            <h2 className="text-3xl font-semibold text-center">Change Deck Permissions</h2>
+            <h3 className="text-xl text-center">deck: {modalDeck.name}</h3>
+            <form onSubmit={onChangePermsSubmit} className="w-full flex flex-col gap-y-5 items-center">
+              <input type="email" required placeholder="enter user's email" className="border-2 border-black px-4 py-3 focus:outline-none w-full max-w-md" />
+              <select required className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
+                <option value="">select user's new permissions</option>
+                <option value="none">remove access to deck</option>
+                <option value="student">student</option>
+                <option value="editor">editor</option>
+                <option value="owner">owner (WARNING: removes you as the owner)</option>
+              </select>
+              <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+                confirm
+              </button>
+            </form>
+          </div>
+        </Modal>
+      }
+      {deletingDeck &&
+        <Modal closeModal={() => setDeletingDeck(false)}>
         </Modal>
       }
     </>
