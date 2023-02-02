@@ -49,6 +49,109 @@ function Deck({ deck, selected=false, changeSelection, onUserPermsClick, onDelet
   );
 }
 
+// modal for creating a new deck
+function CreateNewDeckModal({ closeModal }) {
+
+  // for focusing the text box
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [inputRef]);
+
+  const onSubmit = async (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('created deck');
+      closeModal();
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
+  return (
+    <Modal closeModal={closeModal}>
+      <div className="flex flex-col items-center gap-y-5">
+        <h2 className="text-3xl font-semibold text-center">Create New Deck</h2>
+        <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
+          <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+            continue
+          </button>
+        </form>
+      </div>
+    </Modal>
+  );
+}
+
+// modal for changing a user's permissions on a deck
+function ChangeDeckPermsModal({ modalDeck, closeModal }) {
+
+  // for focusing the text box
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [inputRef]);
+
+  const onSubmit = async (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('changed deck permissions');
+      closeModal();
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
+  return (
+    <Modal closeModal={closeModal}>
+      <div className="flex flex-col items-center">
+        <h2 className="text-3xl font-semibold text-center">Change Deck Permissions</h2>
+        <h3 className="text-xl text-center mb-5">deck: {modalDeck.name}</h3>
+        <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
+          <input ref={inputRef} type="email" required placeholder="enter user's email" className="border-2 border-black px-4 py-3 focus:outline-none w-full max-w-md" />
+          <select required className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
+            <option value="">select user's new permissions</option>
+            <option value="none">remove access to deck</option>
+            <option value="student">student</option>
+            <option value="editor">editor</option>
+            <option value="owner">owner (WARNING: removes you as the owner)</option>
+          </select>
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+            confirm
+          </button>
+        </form>
+      </div>
+    </Modal>
+  );
+}
+
+// modal for confirming deletion of a deck
+function DeleteDeckModal({ modalDeck, closeModal }) {
+  
+  const onClick = async (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('deleted deck');
+      closeModal();
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
+  return (
+    <Modal closeModal={closeModal}>
+      <div className="flex flex-col items-center">
+        <h2 className="text-3xl font-semibold text-center">Delete Deck</h2>
+        <h3 className="text-xl text-center">deck: {modalDeck.name}</h3>
+        <p className="text-2xl font-bold text-center mt-5 mb-7">are you sure you want to delete this deck?</p>
+        <button onClick={onClick} className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+          confirm
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 // the whole page
 function DecksPage() {
 
@@ -70,13 +173,6 @@ function DecksPage() {
     if(!token)
       navigate('/signin');
   }, []);
-
-  // for focusing the text box when creating a new deck
-  const inputRef = useRef(null);
-  useEffect(() => {
-    if (creatingNewDeck)
-      inputRef.current.focus();
-  }, [creatingNewDeck, inputRef]);
 
   // set all values in deckSelections array
   const setAllSelectionsTo = (val) => {
@@ -161,29 +257,6 @@ function DecksPage() {
     navigate('/study?decks=' + encodeURIComponent(studyDeckIds));
   };
 
-  const onCreateSubmit = async (ev) => {
-    try {
-      ev.preventDefault();
-      console.log('created deck');
-      setCreatingNewDeck(false);
-    } catch (err) {
-      console.log('popup -> ', err.data.message);
-    }
-  };
-
-  const onChangePermsSubmit = async (ev) => {
-    try {
-      ev.preventDefault();
-      console.log('changed deck permissions');
-      setChangingDeckPermissions(false);
-    } catch (err) {
-      console.log('popup -> ', err.data.message);
-    }
-  };
-  
-  const onDeleteSubmit = async () => {
-  };
-
   return (
     <>
       <section className="container mx-auto p-4 flex flex-col">
@@ -209,44 +282,9 @@ function DecksPage() {
           +
         </button>
       </section>
-      {creatingNewDeck &&
-        <Modal closeModal={() => setCreatingNewDeck(false)}>
-          <div className="flex flex-col items-center gap-y-5">
-            <h2 className="text-3xl font-semibold text-center">Create New Deck</h2>
-            <form onSubmit={onCreateSubmit} className="w-full flex flex-col gap-y-5 items-center">
-              <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
-              <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
-                continue
-              </button>
-            </form>
-          </div>
-        </Modal>
-      }
-      {changingDeckPermissions &&
-        <Modal closeModal={() => setChangingDeckPermissions(false)}>
-          <div className="flex flex-col items-center gap-y-5">
-            <h2 className="text-3xl font-semibold text-center">Change Deck Permissions</h2>
-            <h3 className="text-xl text-center">deck: {modalDeck.name}</h3>
-            <form onSubmit={onChangePermsSubmit} className="w-full flex flex-col gap-y-5 items-center">
-              <input type="email" required placeholder="enter user's email" className="border-2 border-black px-4 py-3 focus:outline-none w-full max-w-md" />
-              <select required className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
-                <option value="">select user's new permissions</option>
-                <option value="none">remove access to deck</option>
-                <option value="student">student</option>
-                <option value="editor">editor</option>
-                <option value="owner">owner (WARNING: removes you as the owner)</option>
-              </select>
-              <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
-                confirm
-              </button>
-            </form>
-          </div>
-        </Modal>
-      }
-      {deletingDeck &&
-        <Modal closeModal={() => setDeletingDeck(false)}>
-        </Modal>
-      }
+      {creatingNewDeck && <CreateNewDeckModal closeModal={() => setCreatingNewDeck(false)} />}
+      {changingDeckPermissions && <ChangeDeckPermsModal modalDeck={modalDeck} closeModal={() => setChangingDeckPermissions(false)} />}
+      {deletingDeck && <DeleteDeckModal modalDeck={modalDeck} closeModal={() => setDeletingDeck(false)} />}
     </>
   );
 }
