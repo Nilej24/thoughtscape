@@ -81,7 +81,7 @@ function EditCardModal({ card, closeModal }) {
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea rows="3" placeholder="[ this form saves even empty cards btw ]" className="bg-gray-50 focus:outline-none" />
+            <textarea rows="3" placeholder="[ this menu can save even empty cards btw ]" className="bg-gray-50 focus:outline-none" />
           </div>
           <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
             confirm
