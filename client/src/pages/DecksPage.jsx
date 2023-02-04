@@ -74,7 +74,7 @@ function CreateNewDeckModal({ closeModal }) {
         <h2 className="text-3xl font-semibold text-center">Create New Deck</h2>
         <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
           <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
-          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
             continue
           </button>
         </form>
@@ -116,7 +116,7 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
             <option value="editor">editor</option>
             <option value="owner">owner (WARNING: removes you as the owner)</option>
           </select>
-          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-purple-500 hover:bg-purple-300">
             confirm
           </button>
         </form>
@@ -144,7 +144,7 @@ function DeleteDeckModal({ modalDeck, closeModal }) {
         <h2 className="text-3xl font-semibold text-center">Delete Deck</h2>
         <h3 className="text-xl text-center">deck: {modalDeck.name}</h3>
         <p className="text-2xl font-bold text-center mt-5 mb-7">are you sure you want to delete this deck?</p>
-        <button onClick={onClick} className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+        <button onClick={onClick} className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-red-500 hover:bg-red-300">
           confirm
         </button>
       </div>
@@ -263,7 +263,7 @@ function DecksPage() {
         <h1 onClick={() => console.log(deckSelections)} className="text-3xl font-semibold text-center py-3">
           Your Decks
         </h1>
-        <button onClick={onStudyClick} className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-slate-400 self-center md:self-start hover:bg-slate-300">
+        <button onClick={onStudyClick} className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-black text-white self-center md:self-start hover:bg-gray-500">
           <span className="text-3xl">
             <MdMenuBook />
           </span>
@@ -278,7 +278,7 @@ function DecksPage() {
          </li>
           {listContent}
         </ul>
-        <button onClick={() => setCreatingNewDeck(true)} className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-slate-400 self-center md:self-start md:ml-16 hover:bg-slate-300">
+        <button onClick={() => setCreatingNewDeck(true)} className="w-full max-w-md drop-shadow-lg flex justify-center py-4 my-6 text-3xl font-medium bg-black text-white self-center md:self-start md:ml-16 hover:bg-gray-500">
           +
         </button>
       </section>

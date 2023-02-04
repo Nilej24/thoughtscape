@@ -53,7 +53,7 @@ function RenameDeckModal({ deck, closeModal }) {
         <h2 className="text-3xl font-semibold text-center">Rename Deck</h2>
         <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
           <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
-          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
             confirm
           </button>
         </form>
@@ -96,7 +96,7 @@ function MoveCardModal({ card, closeModal, userToken }) {
             <option value="">select this card's new deck</option>
             {options}
           </select>
-          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-amber-500 hover:bg-amber-200">
             confirm
           </button>
         </form>
@@ -237,7 +237,7 @@ function DeckEditPage() {
         <span>
           deck: {deckName}
         </span>
-        <button onClick={() => setRenamingDeck(true)} className="rounded-md text-xl p-2 bg-slate-400 drop-shadow-md hover:bg-slate-300">
+        <button onClick={() => setRenamingDeck(true)} className="rounded-md text-xl p-2 bg-black text-white drop-shadow-md hover:bg-gray-500">
           <FaEdit />
         </button>
       </h1>

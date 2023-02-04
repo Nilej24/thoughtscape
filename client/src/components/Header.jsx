@@ -6,7 +6,7 @@ import { unsetUser, selectUser } from '../features/users/usersSlice';
 
 function HeaderButton({ iconElement, text }) {
   return (
-    <button className="flex items-center space-x-2 font-extrabold drop-shadow-md px-6 py-3 rounded bg-slate-400 hover:bg-slate-300">
+    <button className="flex items-center space-x-2 font-semibold drop-shadow-md px-6 py-3 rounded bg-black text-white hover:bg-gray-500">
       {iconElement}
       <span>{text}</span>
     </button>

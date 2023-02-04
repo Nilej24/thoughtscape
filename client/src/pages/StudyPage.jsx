@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '../features/users/usersSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGetStudyCardsQuery, useUpdateCardRatingMutation } from '../features/api/apiSlice';
+import Modal from '../components/Modal';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
 // screen for when user has completed 10 cards
@@ -30,7 +31,7 @@ function EndScreen({ score, resetStudy }) {
           </p>
         </div>
         <div className="flex gap-5 sm:gap-10">
-          <button onClick={() => navigate('/')} className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-slate-400 hover:bg-slate-300">
+          <button onClick={() => navigate('/')} className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-black text-white hover:bg-gray-500">
             <span className="text-2xl">
               <FaArrowCircleLeft />
             </span>
@@ -38,7 +39,7 @@ function EndScreen({ score, resetStudy }) {
               go back
             </span>
           </button>
-          <button onClick={resetStudy} className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-slate-400 hover:bg-slate-300">
+          <button onClick={resetStudy} className="px-6 py-4 gap-2 flex items-center rounded drop-shadow-lg font-semibold bg-black text-white hover:bg-gray-500">
             <span className="text-2xl">
               <FaArrowCircleRight />
             </span>
@@ -49,6 +50,45 @@ function EndScreen({ score, resetStudy }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// modal for editing current card
+function EditCardModal({ card, closeModal }) {
+
+  const onSubmit = async (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('edited card');
+      closeModal();
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
+  return (
+    <Modal closeModal={closeModal}>
+      <div className="flex flex-col items-center gap-y-10">
+        <h2 className="text-3xl font-semibold text-center">Edit Current Card</h2>
+        <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-10 items-center">
+          <div className="w-full mx-auto bg-gray-100 rounded drop-shadow-md flex flex-col py-2 px-3">
+            <div className="text-lg font-extralight self-start">
+              question
+            </div>
+            <textarea rows="3" placeholder="[you should probably type something here]" className="bg-gray-50 focus:outline-none" />
+          </div>
+          <div className="w-full mx-auto bg-gray-100 rounded drop-shadow-md flex flex-col py-2 px-3">
+            <div className="text-lg font-extralight self-start">
+              answer
+            </div>
+            <textarea rows="3" placeholder="[this form saves even empty cards btw]" className="bg-gray-50 focus:outline-none" />
+          </div>
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
+            confirm
+          </button>
+        </form>
+      </div>
+    </Modal>
   );
 }
 
@@ -88,6 +128,7 @@ function StudyPage() {
   const [currentCardIsAnswered, setCurrentCardIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [sessionRatings, setSessionRatings] = useState([]);
+  const [editingCard, setEditingCard] = useState(false);
 
   // get user token for fetching data
   const user = useSelector(selectUser);
@@ -181,54 +222,57 @@ function StudyPage() {
 
   // render page
   return (
-    <section onKeyDown={onSpacePress} className="container mx-auto px-6 py-10 md:py-40">
-      <div className="xl:scale-125 flex flex-col md:flex-row justify-center items-center gap-10">
-        <ul className="flex flex-row md:flex-col-reverse gap-3">
-          {progressBarItems}
-        </ul>
-        <div className="w-full max-w-xl">
-          <div className={`bg-gray-100 rounded w-full border-x-8 border-x-gray-100 border-t-8 border-t-gray-100 border-b-8 drop-shadow-lg ${(currentRating === 3) ? 'border-b-green-500' : (currentRating === 2) ? 'border-b-amber-500' : (currentRating === 1) ? 'border-b-red-500' : 'border-b-gray-400'}`}>
-            <div className="flex justify-between items-center pl-2 pr-1">
-              <span className="text-4xl">
-                {currentCardIsAnswered ? "A" : "Q"}
-              </span>
-              <button className="text-2xl hover:bg-gray-300 rounded p-1">
-                <FaEdit />
-              </button>
-            </div>
-            <p className="flex justify-center text-center text-xl font-medium h-64 py-3 px-10 mb-5 overflow-auto">
-              {cardText}
-            </p>
-          </div>
-          {currentCardIsAnswered ? (
-            <div className="grid grid-cols-3 gap-3 w-full mt-5 relative">
-              <p className="text-sm font-extralight absolute -top-5 left-1">
-                did you get it right?
+    <>
+      <section onKeyDown={onSpacePress} className="container mx-auto px-6 py-10 md:py-40">
+        <div className="xl:scale-125 flex flex-col md:flex-row justify-center items-center gap-10">
+          <ul className="flex flex-row md:flex-col-reverse gap-3">
+            {progressBarItems}
+          </ul>
+          <div className="w-full max-w-xl">
+            <div className={`bg-gray-100 rounded w-full border-x-8 border-x-gray-100 border-t-8 border-t-gray-100 border-b-8 drop-shadow-lg ${(currentRating === 3) ? 'border-b-green-500' : (currentRating === 2) ? 'border-b-amber-500' : (currentRating === 1) ? 'border-b-red-500' : 'border-b-gray-400'}`}>
+              <div className="flex justify-between items-center pl-2 pr-1">
+                <span className="text-4xl">
+                  {currentCardIsAnswered ? "A" : "Q"}
+                </span>
+                <button onClick={() => setEditingCard(true)} className="text-2xl hover:bg-gray-300 rounded p-1">
+                  <FaEdit />
+                </button>
+              </div>
+              <p className="flex justify-center text-center text-xl font-medium h-64 py-3 px-10 mb-5 overflow-auto">
+                {cardText}
               </p>
-              <div>
-                <button onClick={() => funcForRatingClick(1)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-red-500 hover:bg-red-300">
-                  no
-                </button>
-              </div>
-              <div>
-                <button onClick={() => funcForRatingClick(2)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-amber-500 hover:bg-amber-200">
-                  kinda
-                </button>
-              </div>
-              <div>
-                <button onClick={() => funcForRatingClick(3)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-green-500 hover:bg-green-300">
-                  yes
-                </button>
-              </div>
             </div>
-          ) : (
-            <button onClick={flipCard} className={`rounded w-full p-5 mt-5 font-semibold drop-shadow-lg ${(currentRating === 3) ? 'bg-green-500 hover:bg-green-300' : (currentRating === 2) ? 'bg-amber-500 hover:bg-amber-200' : (currentRating === 1) ? 'bg-red-500 hover:bg-red-300' : 'bg-gray-400 hover:bg-gray-300'}`}>
-              show answer
-            </button>
-          )}
+            {currentCardIsAnswered ? (
+              <div className="grid grid-cols-3 gap-3 w-full mt-5 relative">
+                <p className="text-sm font-extralight absolute -top-5 left-1">
+                  did you get it right?
+                </p>
+                <div>
+                  <button onClick={() => funcForRatingClick(1)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-red-500 hover:bg-red-300">
+                    no
+                  </button>
+                </div>
+                <div>
+                  <button onClick={() => funcForRatingClick(2)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-amber-500 hover:bg-amber-200">
+                    kinda
+                  </button>
+                </div>
+                <div>
+                  <button onClick={() => funcForRatingClick(3)} className="w-full rounded p-5 font-semibold drop-shadow-lg bg-green-500 hover:bg-green-300">
+                    yes
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={flipCard} className={`rounded w-full p-5 mt-5 font-semibold drop-shadow-lg ${(currentRating === 3) ? 'bg-green-500 hover:bg-green-300' : (currentRating === 2) ? 'bg-amber-500 hover:bg-amber-200' : (currentRating === 1) ? 'bg-red-500 hover:bg-red-300' : 'bg-gray-400 hover:bg-gray-300'}`}>
+                show answer
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+      {editingCard && <EditCardModal card={currentCard} closeModal={() => setEditingCard(false)} />}
+    </>
   );
 }
 
