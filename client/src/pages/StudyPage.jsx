@@ -75,13 +75,13 @@ function EditCardModal({ card, closeModal }) {
             <div className="text-lg font-extralight self-start">
               question
             </div>
-            <textarea rows="3" placeholder="[you should probably type something here]" className="bg-gray-50 focus:outline-none" />
+            <textarea rows="3" placeholder="[ you should probably type something here ]" className="bg-gray-50 focus:outline-none" />
           </div>
           <div className="w-full mx-auto bg-gray-100 rounded drop-shadow-md flex flex-col py-2 px-3">
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea rows="3" placeholder="[this form saves even empty cards btw]" className="bg-gray-50 focus:outline-none" />
+            <textarea rows="3" placeholder="[ this form saves even empty cards btw ]" className="bg-gray-50 focus:outline-none" />
           </div>
           <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
             confirm
