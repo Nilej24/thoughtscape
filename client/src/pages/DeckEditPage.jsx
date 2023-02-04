@@ -1,16 +1,18 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaEdit, FaPlusSquare, FaShareSquare, FaTrash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { IoIosSave } from 'react-icons/io';
 import {
+  useGetUserDecksQuery,
   useGetDeckQuery,
   useGetDeckCardsQuery,
   useCreateEmptyCardMutation,
   useUpdateCardMutation,
   useDeleteCardMutation,
 } from '../features/api/apiSlice';
-import { selectUserToken } from '../features/users/usersSlice';
+import { selectUser, selectUserToken } from '../features/users/usersSlice';
+import Modal from '../components/Modal';
 
 function ListCard({ card, selected }) {
   // REMINDER FOR LATER you can use backticks
@@ -26,6 +28,83 @@ function ListCard({ card, selected }) {
   );
 }
 
+// modal for renaming current deck
+function RenameDeckModal({ deck, closeModal }) {
+
+  // for focusing the text box
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [inputRef]);
+
+  const onSubmit = async (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('renamed deck');
+      closeModal();
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
+  return (
+    <Modal closeModal={closeModal}>
+      <div className="flex flex-col items-center gap-y-5">
+        <h2 className="text-3xl font-semibold text-center">Rename Deck</h2>
+        <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
+          <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+            confirm
+          </button>
+        </form>
+      </div>
+    </Modal>
+  );
+}
+
+// modal for moving a card to another deck
+function MoveCardModal({ card, closeModal, userToken }) {
+
+  const user = useSelector(selectUser);
+  const token = user.token;
+
+  const { data: decks, isSuccess } = useGetUserDecksQuery({ token });
+
+  const onSubmit = async (ev) => {
+    try {
+      ev.preventDefault();
+      console.log('moved card');
+      closeModal();
+    } catch (err) {
+      console.log('popup -> ', err.data.message);
+    }
+  };
+
+  const editableDecks = decks?.filter((deck) => deck.owner === user._id || deck.editors.includes(user._id));
+  const options = editableDecks?.map((deck) => {
+    return (
+      <option key={deck._id} value={deck._id}>{deck.name}</option>
+    );
+  });
+
+  return (
+    <Modal closeModal={closeModal}>
+      <div className="flex flex-col items-center gap-5">
+        <h2 className="text-3xl font-semibold text-center">Move Card to Another Deck</h2>
+        <form onSubmit={onSubmit} className="flex flex-col items-center gap-5 w-full">
+          <select required className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
+            <option value="">select this card's new deck</option>
+            {options}
+          </select>
+          <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-slate-400 hover:bg-slate-300">
+            confirm
+          </button>
+        </form>
+      </div>
+    </Modal>
+  );
+}
+
 // page shown on /edit/:deckId
 function DeckEditPage() {
 
@@ -33,6 +112,8 @@ function DeckEditPage() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [currentCard, setCurrentCard] = useState('');
+  const [renamingDeck, setRenamingDeck] = useState(false);
+  const [movingCard, setMovingCard] = useState(false);
 
   // ref for focusing text box
   const questionBoxRef = useRef(null);
@@ -106,6 +187,8 @@ function DeckEditPage() {
       console.log('popup -> please select a card');
       return;
     }
+
+    setMovingCard(true);
   }
 
   const onDeleteCardClick = async () => {
@@ -154,7 +237,7 @@ function DeckEditPage() {
         <span>
           deck: {deckName}
         </span>
-        <button className="rounded-md text-xl p-2 bg-slate-400 drop-shadow-md hover:bg-slate-300">
+        <button onClick={() => setRenamingDeck(true)} className="rounded-md text-xl p-2 bg-slate-400 drop-shadow-md hover:bg-slate-300">
           <FaEdit />
         </button>
       </h1>
@@ -233,6 +316,8 @@ function DeckEditPage() {
           </div>
         </section>
       </div>
+      {renamingDeck && <RenameDeckModal deck={deck} closeModal={() => setRenamingDeck(false)} />}
+      {movingCard && <MoveCardModal card={currentCard} closeModal={() => setMovingCard(false)} />}
     </>
   );
 }

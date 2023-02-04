@@ -105,7 +105,7 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
   return (
     <Modal closeModal={closeModal}>
       <div className="flex flex-col items-center">
-        <h2 className="text-3xl font-semibold text-center">Change Deck Permissions</h2>
+        <h2 className="text-3xl font-semibold text-center">Change a User's Deck Permissions</h2>
         <h3 className="text-xl text-center mb-5">deck: {modalDeck.name}</h3>
         <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
           <input ref={inputRef} type="email" required placeholder="enter user's email" className="border-2 border-black px-4 py-3 focus:outline-none w-full max-w-md" />
