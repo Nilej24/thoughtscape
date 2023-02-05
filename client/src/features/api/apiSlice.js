@@ -154,11 +154,23 @@ export const apiSlice = createApi({
 
     deleteDeck: builder.mutation({
       query: ({ userToken, deckId }) => ({
-        url: `decks/${deckId}`,
+        url: `/decks/${deckId}`,
         method: 'DELETE',
         headers: {
           authorization: `Bearer ${userToken}`,
         },
+      }),
+      invalidatesTags: ['Deck'],
+    }),
+
+    renameDeck: builder.mutation({
+      query: ({ userToken, deckId, name }) => ({
+        url: `/decks/${deckId}`,
+        method: 'PUT',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+        body: { name },
       }),
       invalidatesTags: ['Deck'],
     }),
@@ -181,4 +193,5 @@ export const {
   useCreateDeckMutation,
   useUpdateUserPermissionMutation,
   useDeleteDeckMutation,
+  useRenameDeckMutation,
 } = apiSlice;

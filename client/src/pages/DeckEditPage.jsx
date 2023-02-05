@@ -10,6 +10,8 @@ import {
   useCreateEmptyCardMutation,
   useUpdateCardMutation,
   useDeleteCardMutation,
+  useRenameDeckMutation,
+  useUpdateCardDeckMutation,
 } from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
 import Modal from '../components/Modal';
@@ -36,11 +38,20 @@ function RenameDeckModal({ deck, closeModal }) {
   useEffect(() => {
     inputRef.current.focus();
   }, [inputRef]);
+  
+  // form state
+  const [name, setName] = useState(deck.name);
+  const onChange = (ev) => setName(ev.target.value);
 
+  // get token for requests
+  const userToken = useSelector(selectUserToken);
+
+  // send req to server
+  const [renameDeck, { isLoading: renamingDeck }] = useRenameDeckMutation();
   const onSubmit = async (ev) => {
     try {
       ev.preventDefault();
-      console.log('renamed deck');
+      const renamedDeck = await renameDeck({ userToken, deckId: deck._id, name }).unwrap();
       closeModal();
     } catch (err) {
       console.log('popup -> ', err.data.message);
@@ -52,7 +63,7 @@ function RenameDeckModal({ deck, closeModal }) {
       <div className="flex flex-col items-center gap-y-5">
         <h2 className="text-3xl font-semibold text-center">Rename Deck</h2>
         <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
-          <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
+          <input ref={inputRef} value={name} onChange={onChange} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
           <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
             confirm
           </button>
@@ -63,17 +74,25 @@ function RenameDeckModal({ deck, closeModal }) {
 }
 
 // modal for moving a card to another deck
-function MoveCardModal({ card, closeModal, userToken }) {
+function MoveCardModal({ cardId, closeModal }) {
 
+  // form state
+  const [newDeckId, setNewDeckId] = useState('');
+  const onChange = (ev) => setNewDeckId(ev.target.value);
+
+  // get token for requests
   const user = useSelector(selectUser);
-  const token = user.token;
+  const userToken = user.token;
 
-  const { data: decks, isSuccess } = useGetUserDecksQuery({ token });
+  // get user's decks for the options in the form
+  const { data: decks, isSuccess } = useGetUserDecksQuery({ token: userToken });
 
+  // sent req to server
+  const [updateCardDeck, { isLoading, updatingCardDeck }] = useUpdateCardDeckMutation();
   const onSubmit = async (ev) => {
     try {
       ev.preventDefault();
-      console.log('moved card');
+      const movedCard = await updateCardDeck({ userToken, cardId, newDeckId }).unwrap();
       closeModal();
     } catch (err) {
       console.log('popup -> ', err.data.message);
@@ -92,7 +111,7 @@ function MoveCardModal({ card, closeModal, userToken }) {
       <div className="flex flex-col items-center gap-5">
         <h2 className="text-3xl font-semibold text-center">Move Card to Another Deck</h2>
         <form onSubmit={onSubmit} className="flex flex-col items-center gap-5 w-full">
-          <select required className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
+          <select value={newDeckId} onChange={onChange} required className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
             <option value="">select this card's new deck</option>
             {options}
           </select>
@@ -317,7 +336,7 @@ function DeckEditPage() {
         </section>
       </div>
       {renamingDeck && <RenameDeckModal deck={deck} closeModal={() => setRenamingDeck(false)} />}
-      {movingCard && <MoveCardModal card={currentCard} closeModal={() => setMovingCard(false)} />}
+      {movingCard && <MoveCardModal cardId={currentCard} closeModal={() => setMovingCard(false)} />}
     </>
   );
 }
