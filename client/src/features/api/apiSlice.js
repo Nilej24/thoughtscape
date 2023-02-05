@@ -30,6 +30,7 @@ export const apiSlice = createApi({
           authorization: `Bearer ${token}`,
         },
       }),
+      providesTags: ['Deck'],
     }),
 
     getDeck: builder.query({
@@ -40,6 +41,7 @@ export const apiSlice = createApi({
           authorization: `Bearer ${userToken}`,
         },
       }),
+      providesTags: ['Deck'],
     }),
 
     getDeckCards: builder.query({
@@ -126,6 +128,41 @@ export const apiSlice = createApi({
       invalidatesTags: ['Card'],
     }),
 
+    createDeck: builder.mutation({
+      query: ({ userToken, name }) => ({
+        url: '/decks',
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+        body: { name },
+      }),
+      invalidatesTags: ['Deck'],
+    }),
+
+    updateUserPermission: builder.mutation({
+      query: ({ userToken, userEmail, permission, deckId }) => ({
+        url: `/decks/${deckId}/permissions`,
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+        body: { userEmail, permission },
+      }),
+      invalidatesTags: ['Deck'],
+    }),
+
+    deleteDeck: builder.mutation({
+      query: ({ userToken, deckId }) => ({
+        url: `decks/${deckId}`,
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+      }),
+      invalidatesTags: ['Deck'],
+    }),
+
   }),
 });
 
@@ -141,4 +178,7 @@ export const {
   useUpdateCardDeckMutation,
   useUpdateCardRatingMutation,
   useDeleteCardMutation,
+  useCreateDeckMutation,
+  useUpdateUserPermissionMutation,
+  useDeleteDeckMutation,
 } = apiSlice;

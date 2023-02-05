@@ -95,6 +95,9 @@ function EditCardModal({ card, closeModal }) {
 // 'pure' function for selecting the next card
 // returns the selected card
 const getNextCard = (cards, currentCard, user) => {
+  // if there is only 1 card then return it ofc
+  if (cards.length === 1) return cards[0];
+
   // return any unrated card
   for (const card of cards) {
     if (
@@ -140,7 +143,16 @@ function StudyPage() {
 
   // get all cards in all selected decks
   // (get from server using deck ids)
-  const { data: cardz, isFetching: cardsFetching } = useGetStudyCardsQuery({ userToken, deckIds });
+  const { data: cards, isFetching: cardsFetching } = useGetStudyCardsQuery({ userToken, deckIds });
+
+  // check cards array isn't empty
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (cards && cards.length === 0) {
+      navigate('/');
+      console.log("popup -> the decks you've selected are all empty");
+    }
+  }, [cards]);
 
   // for updating a card's rating
   const [updateCardRating, { isLoading: updatingRating }] = useUpdateCardRatingMutation();
@@ -164,8 +176,8 @@ function StudyPage() {
   // also get next card each time a card is completed
   // this works because setting a card's rating (completing the card) causes all cards to refetch
   useEffect(() => {
-    if (cardz) setCurrentCard(getNextCard(cardz, currentCard, user));
-  }, [cardz]);
+    if (cards && cards.length > 0) setCurrentCard(getNextCard(cards, currentCard, user));
+  }, [cards]);
 
   // make the text shown on the card
   const cardText = currentCard && !updatingRating && !cardsFetching ? (currentCardIsAnswered ? currentCard.back : currentCard.front) : 'loading card...'

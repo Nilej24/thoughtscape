@@ -4,7 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
 import { FaEdit, FaUserEdit, FaTrash } from 'react-icons/fa';
 
-import { useGetUserDecksQuery } from '../features/api/apiSlice';
+import {
+  useGetUserDecksQuery,
+  useCreateDeckMutation,
+  useUpdateUserPermissionMutation,
+  useDeleteDeckMutation,
+} from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
 import Modal from '../components/Modal';
 
@@ -52,16 +57,25 @@ function Deck({ deck, selected=false, changeSelection, onUserPermsClick, onDelet
 // modal for creating a new deck
 function CreateNewDeckModal({ closeModal }) {
 
+  // form state
+  const [name, setName] = useState('');
+  const onChange = (ev) => setName(ev.target.value);
+
   // for focusing the text box
   const inputRef = useRef(null);
   useEffect(() => {
     inputRef.current.focus();
   }, [inputRef]);
 
+  // get token for POST request
+  const userToken = useSelector(selectUserToken);
+
+  // async stuff
+  const [createDeck, { isLoading: creatingDeck }] = useCreateDeckMutation();
   const onSubmit = async (ev) => {
     try {
       ev.preventDefault();
-      console.log('created deck');
+      const newDeck = await createDeck({ userToken, name }).unwrap();
       closeModal();
     } catch (err) {
       console.log('popup -> ', err.data.message);
@@ -73,7 +87,7 @@ function CreateNewDeckModal({ closeModal }) {
       <div className="flex flex-col items-center gap-y-5">
         <h2 className="text-3xl font-semibold text-center">Create New Deck</h2>
         <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
-          <input ref={inputRef} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
+          <input ref={inputRef} onChange={onChange} value={name} type="text" required placeholder="title (e.g. Cell Division, Capitals of Asia)" className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
           <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
             continue
           </button>
@@ -92,10 +106,26 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
     inputRef.current.focus();
   }, [inputRef]);
 
+  // form state
+  const [userEmail, setUserEmail] = useState('');
+  const [permission, setPermission] = useState('');
+  const onEmailChange = (ev) => setUserEmail(ev.target.value);
+  const onPermissionChange = (ev) => setPermission(ev.target.value);
+
+  // token for requests
+  const userToken = useSelector(selectUserToken);
+
+  // async stuff
+  const [updatePermission, { isLoading: settingPermission }] = useUpdateUserPermissionMutation();
   const onSubmit = async (ev) => {
     try {
       ev.preventDefault();
-      console.log('changed deck permissions');
+      const updatedDeck = await updatePermission({
+        userToken,
+        userEmail,
+        permission,
+        deckId: modalDeck._id,
+      }).unwrap();
       closeModal();
     } catch (err) {
       console.log('popup -> ', err.data.message);
@@ -108,8 +138,8 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
         <h2 className="text-3xl font-semibold text-center">Change a User's Deck Permissions</h2>
         <h3 className="text-xl text-center mb-5">deck: {modalDeck.name}</h3>
         <form onSubmit={onSubmit} className="w-full flex flex-col gap-y-5 items-center">
-          <input ref={inputRef} type="email" required placeholder="enter user's email" className="border-2 border-black px-4 py-3 focus:outline-none w-full max-w-md" />
-          <select required className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
+          <input ref={inputRef} value={userEmail} onChange={onEmailChange} type="email" required placeholder="enter user's email" className="border-2 border-black px-4 py-3 focus:outline-none w-full max-w-md" />
+          <select required value={permission} onChange={onPermissionChange} className="w-full max-w-md border-2 border-black focus:outline-none px-4 py-3">
             <option value="">select user's new permissions</option>
             <option value="none">remove access to deck</option>
             <option value="student">student</option>
@@ -127,11 +157,14 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
 
 // modal for confirming deletion of a deck
 function DeleteDeckModal({ modalDeck, closeModal }) {
+
+  const userToken = useSelector(selectUserToken);
   
+  const [deleteDeck, { isLoading: deletingDeck }] = useDeleteDeckMutation();
   const onClick = async (ev) => {
     try {
       ev.preventDefault();
-      console.log('deleted deck');
+      await deleteDeck({ userToken, deckId: modalDeck._id }).unwrap();
       closeModal();
     } catch (err) {
       console.log('popup -> ', err.data.message);

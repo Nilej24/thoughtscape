@@ -259,6 +259,18 @@ const deleteDeck = asyncHandler(async (req, res) => {
     throw new Error('only the owner can delete this deck');
   }
 
+  const cards = await Card.find({ deck: deck._id });
+  if (!cards) {
+    res.status(500);
+    throw new Error("could not delete this deck's cards");
+  }
+
+  // delete all cards inside deck
+  for (const card of cards) {
+    await card.remove();
+  }
+
+  // delete the deck itself
   await deck.remove();
   res.json(deck);
 });
