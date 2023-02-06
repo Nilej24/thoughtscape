@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { selectUser } from '../features/users/usersSlice';
+import { selectUser, selectUserToken } from '../features/users/usersSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useGetStudyCardsQuery, useUpdateCardRatingMutation } from '../features/api/apiSlice';
+import { useGetStudyCardsQuery, useUpdateCardRatingMutation, useUpdateCardMutation } from '../features/api/apiSlice';
 import Modal from '../components/Modal';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
@@ -54,15 +54,27 @@ function EndScreen({ score, resetStudy }) {
 }
 
 // modal for editing current card
-function EditCardModal({ card, closeModal }) {
+function EditCardModal({ card, closeModal, setUpdatingCurrentCard }) {
 
+  // form state
+  const [front, setFront] = useState(card.front);
+  const [back, setBack] = useState(card.back);
+  const onFrontChange = (ev) => setFront(ev.target.value);
+  const onBackChange = (ev) => setBack(ev.target.value);
+
+  // get token for requests
+  const userToken = useSelector(selectUserToken);
+
+  // send req to server
+  const [updateCard, setUpdateCard] = useUpdateCardMutation();
   const onSubmit = async (ev) => {
     try {
       ev.preventDefault();
-      console.log('edited card');
+      const updatedCard = await updateCard({ userToken, cardId: card._id, front, back }).unwrap();
+      setUpdatingCurrentCard(true);
       closeModal();
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      console.log(err);
     }
   };
 
@@ -75,13 +87,13 @@ function EditCardModal({ card, closeModal }) {
             <div className="text-lg font-extralight self-start">
               question
             </div>
-            <textarea rows="3" placeholder="[ you should probably type something here ]" className="bg-gray-50 focus:outline-none" />
+            <textarea rows="3" value={front} onChange={onFrontChange} placeholder="[ you should probably type something here ]" className="bg-gray-50 focus:outline-none" />
           </div>
           <div className="w-full mx-auto bg-gray-100 rounded drop-shadow-md flex flex-col py-2 px-3">
             <div className="text-lg font-extralight self-start">
               answer
             </div>
-            <textarea rows="3" placeholder="[ this menu can save even empty cards btw ]" className="bg-gray-50 focus:outline-none" />
+            <textarea rows="3" value={back} onChange={onBackChange} placeholder="[ this menu can save even empty cards btw ]" className="bg-gray-50 focus:outline-none" />
           </div>
           <button className="rounded flex items-center space-x-2 px-6 py-4 text-xl font-semibold bg-black text-white hover:bg-gray-500">
             confirm
@@ -172,11 +184,20 @@ function StudyPage() {
     return () => window.removeEventListener('keydown', onSpacePress);
   }, [onSpacePress]);
 
+  // state used to update the current card on the page after editing it
+  const [updatingCurrentCard, setUpdatingCurrentCard] = useState(false);
+
   // set initial card
   // also get next card each time a card is completed
+  // also update current card after editing
   // this works because setting a card's rating (completing the card) causes all cards to refetch
   useEffect(() => {
-    if (cards && cards.length > 0) setCurrentCard(getNextCard(cards, currentCard, user));
+    if (updatingCurrentCard) {
+      setCurrentCard(cards.find((card) => card._id === currentCard._id));
+      setUpdatingCurrentCard(false);
+    } else if (cards && cards.length > 0) {
+      setCurrentCard(getNextCard(cards, currentCard, user));
+    }
   }, [cards]);
 
   // make the text shown on the card
@@ -250,7 +271,7 @@ function StudyPage() {
                   <FaEdit />
                 </button>
               </div>
-              <p className="flex justify-center text-center text-xl font-medium h-64 py-3 px-10 mb-5 overflow-auto">
+              <p className="flex justify-center text-center text-xl font-medium h-64 py-3 px-10 mb-5 overflow-auto whitespace-pre-line">
                 {cardText}
               </p>
             </div>
@@ -283,7 +304,7 @@ function StudyPage() {
           </div>
         </div>
       </section>
-      {editingCard && <EditCardModal card={currentCard} closeModal={() => setEditingCard(false)} />}
+      {editingCard && <EditCardModal card={currentCard} setUpdatingCurrentCard={setUpdatingCurrentCard} closeModal={() => setEditingCard(false)} />}
     </>
   );
 }
