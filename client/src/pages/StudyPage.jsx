@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useGetStudyCardsQuery, useUpdateCardRatingMutation, useUpdateCardMutation } from '../features/api/apiSlice';
 import Modal from '../components/Modal';
 import { FaEdit, FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
+import { toastFuncs } from '../components/ToastManager';
 
 // screen for when user has completed 10 cards
 function EndScreen({ score, resetStudy }) {
@@ -71,10 +72,11 @@ function EditCardModal({ card, closeModal, setUpdatingCurrentCard }) {
     try {
       ev.preventDefault();
       const updatedCard = await updateCard({ userToken, cardId: card._id, front, back }).unwrap();
+      toastFuncs.success('updated current card!');
       setUpdatingCurrentCard(true);
       closeModal();
     } catch (err) {
-      console.log(err);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
@@ -162,7 +164,7 @@ function StudyPage() {
   useEffect(() => {
     if (cards && cards.length === 0) {
       navigate('/');
-      console.log("popup -> the decks you've selected are all empty");
+      toastFuncs.warning("all decks empty: please select decks that contain more than 0 cards");
     }
   }, [cards]);
 
@@ -218,7 +220,7 @@ function StudyPage() {
       setScore(score + 0.5 * (newRating - 1));
       setSessionRatings([...sessionRatings, newRating]);
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
   const onNumPress = (ev) => {

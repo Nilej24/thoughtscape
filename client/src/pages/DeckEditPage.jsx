@@ -53,9 +53,10 @@ function RenameDeckModal({ deck, closeModal }) {
     try {
       ev.preventDefault();
       const renamedDeck = await renameDeck({ userToken, deckId: deck._id, name }).unwrap();
+      toastFuncs.success('renamed the current deck!');
       closeModal();
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
@@ -94,9 +95,10 @@ function MoveCardModal({ cardId, closeModal }) {
     try {
       ev.preventDefault();
       const movedCard = await updateCardDeck({ userToken, cardId, newDeckId }).unwrap();
+      toastFuncs.success('moved card to another deck!');
       closeModal();
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
@@ -175,7 +177,7 @@ function DeckEditPage() {
   // click handlers
   const onSaveCardClick = async () => {
     if (!currentCard) {
-      toastFuncs.warning('save');
+      toastFuncs.warning('no card selected: please select a card before saving');
       return;
     }
 
@@ -186,25 +188,26 @@ function DeckEditPage() {
         front: question,
         back: answer,
       }).unwrap();
-      console.log(newCard);
+      toastFuncs.success('card saved!');
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
   const onNewCardClick = async () => {
     try {
       const newCard = await createCard({ userToken, deckId }).unwrap();
+      toastFuncs.success('new card created!');
       changeCard(newCard);
       questionBoxRef.current.focus();
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
   const onMoveCardClick = () => {
     if (!currentCard) {
-      toastFuncs.warning('a;sdlka;sdlkf djklsdf ajs dafjsafdsafds;afldjdlaj;adjlkdljkl      l ll;l;a ');
+      toastFuncs.warning('no card selected: please select a card before moving');
       return;
     }
 
@@ -213,16 +216,16 @@ function DeckEditPage() {
 
   const onDeleteCardClick = async () => {
     if (!currentCard) {
-      toastFuncs.warning('delete');
+      toastFuncs.warning('no card selected: please select a card before deleting');
       return;
     }
 
     try {
       const deletedCard = await deleteCard({ userToken, cardId: currentCard }).unwrap();
+      toastFuncs.success('card deleted!');
       unsetCard();
-      console.log(deletedCard);
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 

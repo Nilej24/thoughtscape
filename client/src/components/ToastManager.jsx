@@ -23,7 +23,7 @@ function Toast({ message, onClose }) {
   return (
     <div
       style={{backgroundColor: toastColors[message.type]}}
-      className="bg-gray-200 rounded w-full p-5 cursor-pointer text-center toast"
+      className="bg-gray-200 font-light rounded w-full p-5 cursor-pointer text-center toast"
       onClick={onClose}
     >
       {message.text}
@@ -41,10 +41,7 @@ function ToastManager() {
   // update toast functions when state changes
   useEffect(() => {
     for (const [key] of Object.entries(toastFuncs)) {
-      toastFuncs[key] = (text) => {
-        const newMessage = { text, type: key };
-        setMessages([...messages, newMessage]);
-      };
+      toastFuncs[key] = (text) => setMessages([...messages, { text, type: key }]);
     }
   }, [messages]);
 

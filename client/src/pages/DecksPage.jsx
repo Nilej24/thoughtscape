@@ -77,9 +77,10 @@ function CreateNewDeckModal({ closeModal }) {
     try {
       ev.preventDefault();
       const newDeck = await createDeck({ userToken, name }).unwrap();
+      toastFuncs.success('created a new deck!');
       closeModal();
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
@@ -127,9 +128,10 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
         permission,
         deckId: modalDeck._id,
       }).unwrap();
+      toastFuncs.success(`set ${userEmail}'s permissions for deck: ${updatedDeck.name} to '${permission}'!`);
       closeModal();
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
@@ -165,10 +167,11 @@ function DeleteDeckModal({ modalDeck, closeModal }) {
   const onClick = async (ev) => {
     try {
       ev.preventDefault();
-      await deleteDeck({ userToken, deckId: modalDeck._id }).unwrap();
+      const deletedDeck = await deleteDeck({ userToken, deckId: modalDeck._id }).unwrap();
+      toastFuncs.success(`deleted deck: ${deletedDeck.name}!`);
       closeModal();
     } catch (err) {
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
     }
   };
 
@@ -283,7 +286,7 @@ function DecksPage() {
 
     /* popup error thing if none are selected */
     if (studyDeckIds.length === 0) {
-      console.log('popup -> please select some decks to study');
+      toastFuncs.warning('no decks selected: please select 1 or more decks to study');
       return;
     }
 
@@ -294,7 +297,7 @@ function DecksPage() {
   return (
     <>
       <section className="container mx-auto p-4 flex flex-col">
-        <h1 onClick={() => console.log(deckSelections)} className="text-3xl font-semibold text-center py-3">
+        <h1 className="text-3xl font-semibold text-center py-3">
           Your Decks
         </h1>
         <button onClick={onStudyClick} className="rounded-full drop-shadow-lg flex items-center space-x-2 px-6 py-4 my-6 text-xl font-semibold bg-black text-white self-center md:self-start hover:bg-gray-500">
