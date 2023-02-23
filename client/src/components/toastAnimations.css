@@ -1,0 +1,18 @@
+.toast {
+  animation: fade-in 0.3s ease-out;
+  transition: transform 0.3s;
+}
+
+.toast:hover {
+  transform: scale(0.95);
+}
+
+@keyframes fade-in {
+  from {
+    transform: translateX(150%);
+  }
+
+  to {
+    transform: translateX(0%);
+  }
+}

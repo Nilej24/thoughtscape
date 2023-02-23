@@ -12,6 +12,7 @@ import {
 } from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
 import Modal from '../components/Modal';
+import { toastFuncs } from '../components/ToastManager';
 
 // display for each deck
 function Deck({ deck, selected=false, changeSelection, onUserPermsClick, onDeleteClick }) {

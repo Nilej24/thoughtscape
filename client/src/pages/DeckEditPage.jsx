@@ -15,6 +15,7 @@ import {
 } from '../features/api/apiSlice';
 import { selectUser, selectUserToken } from '../features/users/usersSlice';
 import Modal from '../components/Modal';
+import { toastFuncs } from '../components/ToastManager';
 
 function ListCard({ card, selected }) {
   // REMINDER FOR LATER you can use backticks
@@ -174,7 +175,7 @@ function DeckEditPage() {
   // click handlers
   const onSaveCardClick = async () => {
     if (!currentCard) {
-      console.log('popup -> please select a card');
+      toastFuncs.warning('save');
       return;
     }
 
@@ -203,7 +204,7 @@ function DeckEditPage() {
 
   const onMoveCardClick = () => {
     if (!currentCard) {
-      console.log('popup -> please select a card');
+      toastFuncs.warning('a;sdlka;sdlkf djklsdf ajs dafjsafdsafds;afldjdlaj;adjlkdljkl      l ll;l;a ');
       return;
     }
 
@@ -212,7 +213,7 @@ function DeckEditPage() {
 
   const onDeleteCardClick = async () => {
     if (!currentCard) {
-      console.log('popup -> please select a card');
+      toastFuncs.warning('delete');
       return;
     }
 

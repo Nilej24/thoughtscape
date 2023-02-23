@@ -7,19 +7,23 @@ import DecksPage from './pages/DecksPage';
 import StudyPage from './pages/StudyPage';
 import SignIn from './pages/SignIn';
 import Register from './pages/Register';
+import ToastManager, { toastFuncs } from './components/ToastManager';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<DecksPage />} />
-        <Route path="/edit" element={<DeckEditPage />} />
-        <Route path="/study" element={<StudyPage />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<DecksPage />} />
+          <Route path="/edit" element={<DeckEditPage />} />
+          <Route path="/study" element={<StudyPage />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </BrowserRouter>
+      <ToastManager />
+    </>
   );
 }
 
