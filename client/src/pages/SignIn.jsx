@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useSigninUserMutation } from '../features/api/apiSlice';
 import { setUser } from '../features/users/usersSlice';
+import { toastFuncs } from '../components/ToastManager';
 
 function SignIn() {
   // state
@@ -32,12 +33,14 @@ function SignIn() {
       // and in redux
       dispatch(setUser(user));
 
+      toastFuncs.success(`signed in as user '${user.name}'`);
+
       // redirect to decks page
       navigate('/');
 
     } catch (err) {
       // gonna make it do a popup or whatever later
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data?.message}`);
     }
   };
 
@@ -48,7 +51,7 @@ function SignIn() {
         Sign In
       </h1>
       <p className="my-2 text-xl text-gray-800 text-center">
-        and keep doing what you're doing champ
+        and continue crafting your <b>legendary</b> deck
       </p>
       <form onSubmit={onSubmit} className="flex flex-col items-center w-full">
         <input type="email" placeholder="email" value={email} onChange={onEmailChange} required className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />

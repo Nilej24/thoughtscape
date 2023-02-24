@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaSignOutAlt, FaSignInAlt, FaUser } from 'react-icons/fa';
 
 import { unsetUser, selectUser } from '../features/users/usersSlice';
+import { toastFuncs } from './ToastManager';
 
 function HeaderButton({ iconElement, text }) {
   return (
@@ -27,6 +28,7 @@ function Header() {
     localStorage.removeItem('user');
     // and from redux
     dispatch(unsetUser());
+    toastFuncs.success('signed out!');
 
     // navigate to sign in page
     navigate('/signin');

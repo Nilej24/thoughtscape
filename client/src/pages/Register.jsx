@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { setUser } from '../features/users/usersSlice';
 import { useRegisterUserMutation } from '../features/api/apiSlice';
+import { toastFuncs } from '../components/ToastManager';
 
 function Register() {
   // boring state
@@ -11,6 +15,7 @@ function Register() {
 
   // boring nav function
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // boring change handlers
   const onNameChange = (ev) => setName(ev.target.value);
@@ -45,13 +50,17 @@ function Register() {
       // save token and stuff in localStorage
       console.log(user);
       localStorage.setItem('user', JSON.stringify(user));
+      // and in redux
+      dispatch(setUser(user));
+
+      toastFuncs.success(`registered and signed in as user '${user.name}'`);
 
       // redirect to 'your decks'
       navigate('/');
 
     } catch (err) {
       // toast later
-      console.log('popup -> ', err.data.message);
+      toastFuncs.error(`error status ${err.status}: ${err.data?.message}`);
     }
   };
 
@@ -62,7 +71,7 @@ function Register() {
         Register
       </h1>
       <p className="my-2 text-xl text-gray-800 text-center">
-        and start making some killer flashcards
+        and start making some <b>killer</b> flashcards
       </p>
       <form onSubmit={onSubmit} className="flex flex-col items-center w-full">
         <input type="text" placeholder="username" value={name} onChange={onNameChange} required className="border-2 border-black px-4 py-3 my-2 focus:outline-none w-full max-w-md" />
