@@ -13,7 +13,8 @@ import {
   useRenameDeckMutation,
   useUpdateCardDeckMutation,
 } from '../features/api/apiSlice';
-import { selectUser, selectUserToken } from '../features/users/usersSlice';
+import { selectUser } from '../features/users/usersSlice';
+import { useUserToken } from '../hooks/useUserToken';
 import Modal from '../components/Modal';
 import { toastFuncs } from '../components/ToastManager';
 
@@ -41,11 +42,21 @@ function RenameDeckModal({ deck, closeModal }) {
   }, [inputRef]);
   
   // form state
-  const [name, setName] = useState(deck.name);
+  const [name, setName] = useState('loading...');
   const onChange = (ev) => setName(ev.target.value);
 
+  // set initial state without crashing if deck not loaded
+  useEffect(() => {
+    if (deck) {
+      setName(deck.name);
+    } else {
+      toastFuncs.warning('could not rename deck: deck not loaded');
+      closeModal();
+    }
+  }, [deck]);
+
   // get token for requests
-  const userToken = useSelector(selectUserToken);
+  const userToken = useUserToken();
 
   // send req to server
   const [renameDeck, { isLoading: renamingDeck }] = useRenameDeckMutation();
@@ -56,7 +67,7 @@ function RenameDeckModal({ deck, closeModal }) {
       toastFuncs.success('renamed the current deck!');
       closeModal();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -98,7 +109,7 @@ function MoveCardModal({ cardId, closeModal }) {
       toastFuncs.success('moved card to another deck!');
       closeModal();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -145,7 +156,7 @@ function DeckEditPage() {
   const deckId = new URLSearchParams(search).get('deck');
 
   // get user token for fetching data
-  const userToken = useSelector(selectUserToken);
+  const userToken = useUserToken();
 
   // fetch deck so we can display its name
   const { data: deck, isSuccess: deckLoaded } = useGetDeckQuery({ userToken, deckId });
@@ -190,7 +201,7 @@ function DeckEditPage() {
       }).unwrap();
       toastFuncs.success('card saved!');
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -201,7 +212,7 @@ function DeckEditPage() {
       changeCard(newCard);
       questionBoxRef.current.focus();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -225,7 +236,7 @@ function DeckEditPage() {
       toastFuncs.success('card deleted!');
       unsetCard();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 

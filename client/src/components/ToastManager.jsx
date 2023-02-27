@@ -16,6 +16,7 @@ const toastColors = {
 for (const [key] of Object.entries(toastColors)) {
   toastFuncs[key] = () => console.error("toast manager hasn't loaded yet");
 }
+toastFuncs.defaultError = () => console.error("toast manager hasn't loaded yet");
 
 // toast component
 function Toast({ message, onClose }) {
@@ -43,6 +44,7 @@ function ToastManager() {
     for (const [key] of Object.entries(toastFuncs)) {
       toastFuncs[key] = (text) => setMessages([...messages, { text, type: key }]);
     }
+    toastFuncs.defaultError = (err) => toastFuncs.error(`error status ${err.status}: ${err.data?.message}`);
   }, [messages]);
 
   // useEffects for auto delete

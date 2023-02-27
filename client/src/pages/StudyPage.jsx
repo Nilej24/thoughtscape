@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { selectUser, selectUserToken } from '../features/users/usersSlice';
+import { selectUser } from '../features/users/usersSlice';
+import { useUserToken } from '../hooks/useUserToken';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGetStudyCardsQuery, useUpdateCardRatingMutation, useUpdateCardMutation } from '../features/api/apiSlice';
 import Modal from '../components/Modal';
@@ -58,13 +59,24 @@ function EndScreen({ score, resetStudy }) {
 function EditCardModal({ card, closeModal, setUpdatingCurrentCard }) {
 
   // form state
-  const [front, setFront] = useState(card.front);
-  const [back, setBack] = useState(card.back);
+  const [front, setFront] = useState('loading card...');
+  const [back, setBack] = useState('loading card...');
   const onFrontChange = (ev) => setFront(ev.target.value);
   const onBackChange = (ev) => setBack(ev.target.value);
 
+  // set initial state without crashing if card not loaded
+  useEffect(() => {
+    if (card) {
+      setFront(card.front);
+      setBack(card.back);
+    } else {
+      toastFuncs.warning('could not edit card: card not loaded');
+      closeModal();
+    }
+  }, [card]);
+
   // get token for requests
-  const userToken = useSelector(selectUserToken);
+  const userToken = useUserToken();
 
   // send req to server
   const [updateCard, setUpdateCard] = useUpdateCardMutation();
@@ -76,7 +88,7 @@ function EditCardModal({ card, closeModal, setUpdatingCurrentCard }) {
       setUpdatingCurrentCard(true);
       closeModal();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -149,7 +161,7 @@ function StudyPage() {
 
   // get user token for fetching data
   const user = useSelector(selectUser);
-  const userToken = user?.token;
+  const userToken = useUserToken();
 
   // get selected deck ids from url
   const { search } = useLocation();
@@ -203,7 +215,7 @@ function StudyPage() {
   }, [cards]);
 
   // make the text shown on the card
-  const cardText = currentCard && !updatingRating && !cardsFetching ? (currentCardIsAnswered ? currentCard.back : currentCard.front) : 'loading card...'
+  const cardText = currentCard && !updatingRating && !cardsFetching ? (currentCardIsAnswered ? currentCard.back : currentCard.front) : 'loading card...';
 
   // get rating as a number
   // for changing color shown on the card in ui
@@ -220,7 +232,7 @@ function StudyPage() {
       setScore(score + 0.5 * (newRating - 1));
       setSessionRatings([...sessionRatings, newRating]);
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
   const onNumPress = (ev) => {

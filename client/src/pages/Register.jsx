@@ -59,8 +59,7 @@ function Register() {
       navigate('/');
 
     } catch (err) {
-      // toast later
-      toastFuncs.error(`error status ${err.status}: ${err.data?.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 

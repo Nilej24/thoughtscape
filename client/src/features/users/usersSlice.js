@@ -18,7 +18,7 @@ const usersSlice = createSlice({
 });
 
 const selectUser = state => state.users.user;
-const selectUserToken = state => !!state.users.user && state.users.user.token;
+const selectUserToken = state => state?.users?.user?.token;
 
 export const { setUser, unsetUser } = usersSlice.actions;
 export { selectUser, selectUserToken };

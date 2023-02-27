@@ -10,7 +10,8 @@ import {
   useUpdateUserPermissionMutation,
   useDeleteDeckMutation,
 } from '../features/api/apiSlice';
-import { selectUser, selectUserToken } from '../features/users/usersSlice';
+import { selectUser } from '../features/users/usersSlice';
+import { useUserToken } from '../hooks/useUserToken';
 import Modal from '../components/Modal';
 import { toastFuncs } from '../components/ToastManager';
 
@@ -69,7 +70,7 @@ function CreateNewDeckModal({ closeModal }) {
   }, [inputRef]);
 
   // get token for POST request
-  const userToken = useSelector(selectUserToken);
+  const userToken = useUserToken();
 
   // async stuff
   const [createDeck, { isLoading: creatingDeck }] = useCreateDeckMutation();
@@ -80,7 +81,7 @@ function CreateNewDeckModal({ closeModal }) {
       toastFuncs.success('created a new deck!');
       closeModal();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -115,7 +116,7 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
   const onPermissionChange = (ev) => setPermission(ev.target.value);
 
   // token for requests
-  const userToken = useSelector(selectUserToken);
+  const userToken = useUserToken();
 
   // async stuff
   const [updatePermission, { isLoading: settingPermission }] = useUpdateUserPermissionMutation();
@@ -131,7 +132,7 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
       toastFuncs.success(`set ${userEmail}'s permissions for deck: ${updatedDeck.name} to '${permission}'!`);
       closeModal();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -161,7 +162,7 @@ function ChangeDeckPermsModal({ modalDeck, closeModal }) {
 // modal for confirming deletion of a deck
 function DeleteDeckModal({ modalDeck, closeModal }) {
 
-  const userToken = useSelector(selectUserToken);
+  const userToken = useUserToken();
   
   const [deleteDeck, { isLoading: deletingDeck }] = useDeleteDeckMutation();
   const onClick = async (ev) => {
@@ -171,7 +172,7 @@ function DeleteDeckModal({ modalDeck, closeModal }) {
       toastFuncs.success(`deleted deck: ${deletedDeck.name}!`);
       closeModal();
     } catch (err) {
-      toastFuncs.error(`error status ${err.status}: ${err.data.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
@@ -197,19 +198,12 @@ function DecksPage() {
   const [changingDeckPermissions, setChangingDeckPermissions] = useState(false);
   const [deletingDeck, setDeletingDeck] = useState(false);
   const [deckSelections, setDeckSelections] = useState([]);
-  const token = useSelector(selectUserToken);
+  const token = useUserToken();
 
   // fetch decks from database
   const { data: decks, isSuccess } = useGetUserDecksQuery({ token });
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  // send to sign in page if not logged in
-  useEffect(() => {
-    if(!token)
-      navigate('/signin');
-  }, []);
 
   // set all values in deckSelections array
   const setAllSelectionsTo = (val) => {
@@ -277,6 +271,12 @@ function DecksPage() {
 
   /* 'study selected decks' button click handler */
   const onStudyClick = () => {
+
+    // popup error if decks not loaded
+    if (!decks) {
+      toastFuncs.error('error: decks not loaded');
+      return;
+    }
 
     /* get string of ids (separated by ',') for the selected decks */
     const studyDeckIds = decks.reduce((str, deck, index) => {

@@ -39,8 +39,7 @@ function SignIn() {
       navigate('/');
 
     } catch (err) {
-      // gonna make it do a popup or whatever later
-      toastFuncs.error(`error status ${err.status}: ${err.data?.message}`);
+      toastFuncs.defaultError(err);
     }
   };
 
