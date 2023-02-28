@@ -32,6 +32,12 @@ app.use('/api/users', userRouter);
 app.use('/api/decks', deckRouter);
 app.use('/api/cards', cardRouter);
 
+// 'health check' path
+app.get('/api', (req, res) => {
+  res.status(200);
+  res.json('hi');
+});
+
 // error handler
 app.use(errorHandler);
 
